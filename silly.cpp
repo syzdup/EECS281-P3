@@ -188,7 +188,9 @@ void REMOVE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
             cout << "Table " << table_name << " deleted\n";
         }
     } else {
-        cout << table_name << " is not the name of a table in the database\n";
+        cout << "Error during REMOVE: "<<table_name << " does not name a table in the database\n";
+        string junk;
+        getline(cin, junk);
     }
 
 }
@@ -216,9 +218,23 @@ int main(int argc, char * argv[]) {
     }
     // Start of program
     string cmd;
+
+    // For commands not yet implemented
+    string junk;
     do {
+        if(cin.fail()) {
+            cerr << "Error: Reading from cin has failed" << endl;
+            exit(1);
+        }
         cout << "% ";
         cin >> cmd;
+
+        /*
+            Performance note:
+            
+            - can change to index strings instead of compare them
+        */
+       
         if(cmd == "CREATE") {
             CREATE_cmd(tables, quiet_mode);
         } else if(cmd == "INSERT") {
@@ -227,8 +243,17 @@ int main(int argc, char * argv[]) {
             PRINT_cmd(tables, quiet_mode);
         } else if(cmd == "REMOVE") {
             REMOVE_cmd(tables, quiet_mode);
+        } else if(cmd == "DELETE") {
+            getline(cin, junk);
+        } else if(cmd == "GENERATE") {
+            getline(cin, junk);
+        } else if(cmd == "JOIN") {
+            getline(cin, junk);
         } else if(cmd == "#") {
             string junk;
+            getline(cin, junk);
+        } else if(cmd != "QUIT"){
+            cout << "Error: unrecognized command\n";
             getline(cin, junk);
         }
     } while(cmd != "QUIT");
