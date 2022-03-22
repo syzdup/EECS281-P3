@@ -80,7 +80,7 @@ void CREATE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
         tables.insert({table_name, new_table});
 
         if(!quiet_mode) {
-            cout << "New table " << table_name << " created with column(s) ";
+            cout << "New table " << table_name << " with column(s) ";
             for(size_t i = 0; i < col_names.size(); ++i) {
                 cout << col_names[i] << " ";
             }
@@ -117,15 +117,15 @@ void INSERT_cmd(unordered_map<string,Table> &tables, bool quiet_mode) {
         }
 
         if(!quiet_mode) {
-            cout << "Added " << num_rows << " rows to " << table_name << " from " << tables[table_name].data.size() - num_rows <<
-            " to " << tables[table_name].data.size() << "\n";
+            cout << "Added " << num_rows << " rows to " << table_name << " from position " << tables[table_name].data.size() - num_rows <<
+            " to " << tables[table_name].data.size() - 1 << "\n";
         }
     } else {
         cout << table_name << " is not the name of a table in the database\n";
     }
 }
 
-void PRINT_cmd(unordered_map<string, Table> &tables) {
+void PRINT_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
     string junk;
     cin >> junk;
     string table_name;
@@ -173,6 +173,24 @@ void PRINT_cmd(unordered_map<string, Table> &tables) {
             cout << "\n";
         }
     }
+    if(!quiet_mode) {
+        cout << "Printed " << tables[table_name].data.size() << " matching rows from " << table_name << "\n";
+    }
+}
+
+void REMOVE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
+    string table_name;
+    cin >> table_name;
+
+    if(tables.find(table_name) != tables.end()) {
+        tables.erase(table_name);
+        if(!quiet_mode) {
+            cout << "Table " << table_name << " deleted\n";
+        }
+    } else {
+        cout << table_name << " is not the name of a table in the database\n";
+    }
+
 }
 
 int main(int argc, char * argv[]) {
@@ -206,7 +224,9 @@ int main(int argc, char * argv[]) {
         } else if(cmd == "INSERT") {
             INSERT_cmd(tables, quiet_mode);
         } else if(cmd == "PRINT") {
-            PRINT_cmd(tables);
+            PRINT_cmd(tables, quiet_mode);
+        } else if(cmd == "REMOVE") {
+            REMOVE_cmd(tables, quiet_mode);
         } else if(cmd == "#") {
             string junk;
             getline(cin, junk);
