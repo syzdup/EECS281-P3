@@ -150,6 +150,7 @@ void PRINT_cmd(unordered_map<string, Table> &tables) {
 
     // Check if 'WHERE' or 'ALL'
     string choice;
+    cin >> choice;
     if(choice == "ALL") {
         for(size_t row = 0; row < tables[table_name].data.size(); ++row) {
             for(size_t col = 0; col < cols_to_print.size(); ++col) {
