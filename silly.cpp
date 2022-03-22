@@ -39,7 +39,7 @@ int get_column_index(unordered_map<string, Table> &tables, string table_name, st
     return -1;
 }
 
-void CREATE_cmd(unordered_map<string, Table> &tables) {
+void CREATE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
     int num_cols;
     string table_name;
     vector<EntryType> col_types;
@@ -79,12 +79,20 @@ void CREATE_cmd(unordered_map<string, Table> &tables) {
         Table new_table(table_name, col_types, col_names);
         tables.insert({table_name, new_table});
 
+        if(!quiet_mode) {
+            cout << "New table " << table_name << " created with column(s) ";
+            for(size_t i = 0; i < col_names.size(); ++i) {
+                cout << col_names[i] << " ";
+            }
+            cout << "created\n";
+        }
+
     } else {
         cout << "Error during CREATE: Cannot create already existing table " << table_name << "\n";
     }
 }
 
-void INSERT_cmd(unordered_map<string,Table> &tables) {
+void INSERT_cmd(unordered_map<string,Table> &tables, bool quiet_mode) {
     string junk;
     cin >> junk;
 
@@ -106,6 +114,11 @@ void INSERT_cmd(unordered_map<string,Table> &tables) {
                 new_row.emplace_back(create_entry(current_type));
             }
             tables[table_name].data.emplace_back(new_row);
+        }
+
+        if(!quiet_mode) {
+            cout << "Added " << num_rows << " rows to " << table_name << " from " << tables[table_name].data.size() - num_rows <<
+            " to " << tables[table_name].data.size() << "\n";
         }
     } else {
         cout << table_name << " is not the name of a table in the database\n";
@@ -189,9 +202,9 @@ int main(int argc, char * argv[]) {
         cout << "% ";
         cin >> cmd;
         if(cmd == "CREATE") {
-            CREATE_cmd(tables);
+            CREATE_cmd(tables, quiet_mode);
         } else if(cmd == "INSERT") {
-            INSERT_cmd(tables);
+            INSERT_cmd(tables, quiet_mode);
         } else if(cmd == "PRINT") {
             PRINT_cmd(tables);
         } else if(cmd == "#") {
