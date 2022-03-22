@@ -32,7 +32,7 @@ TableEntry create_entry(EntryType current_type) {
 // Returns an index of the column name where column_name matches the column. If it is not found, returns -1 as in index
 int get_column_index(unordered_map<string, Table> &tables, string table_name, string column_name) {
     for(int i = 0; i < int(tables[table_name].col_names.size()); ++i) {
-        if(tables[table_name].col_names[i] == column_name) {
+        if(tables[table_name].col_names[(unsigned long)i] == column_name) {
             return i;
         }
     }
@@ -89,19 +89,19 @@ void INSERT_cmd(unordered_map<string,Table> &tables) {
     cin >> junk;
 
     string table_name;
-    int num_rows;
+    size_t num_rows;
     cin >> table_name;
     cin >> num_rows;
     cin >> junk;
     if(tables.find(table_name) != tables.end()) {
 
-        int current_size = int(tables[table_name].data.size());
+        size_t current_size = tables[table_name].data.size();
         tables[table_name].data.reserve(current_size + num_rows);
 
-        for(int i = current_size; i < current_size + num_rows; ++i) {
+        for(size_t i = current_size; i < (unsigned long)(current_size + num_rows); ++i) {
             vector<TableEntry> new_row;
             new_row.reserve(tables[table_name].col_names.size());
-            for(int j = 0; j < int(tables[table_name].col_names.size()); ++j) {
+            for(size_t j = 0; j < tables[table_name].col_names.size(); ++j) {
                 EntryType current_type = tables[table_name].col_types[j];
                 new_row.emplace_back(create_entry(current_type));
             }
@@ -117,7 +117,7 @@ void PRINT_cmd(unordered_map<string, Table> &tables) {
     cin >> junk;
     string table_name;
     cin >> table_name;
-    int num_cols;
+    size_t num_cols;
     cin >> num_cols;
 
     vector<string> cols_to_print;
@@ -127,13 +127,13 @@ void PRINT_cmd(unordered_map<string, Table> &tables) {
 
     // Get column names
     string temp_name;
-    for(int i = 0; i < num_cols; ++i) {
+    for(size_t i = 0; i < num_cols; ++i) {
         cin >> temp_name;
         cols_to_print.push_back(temp_name);
     }
 
     // Get indices of columns to print
-    for(int i = 0; i < int(cols_to_print.size()); ++i) {
+    for(size_t i = 0; i < cols_to_print.size(); ++i) {
         int col_index = get_column_index(tables, table_name, cols_to_print[i]);
         if(col_index != -1) {
             col_indices.push_back(col_index);
@@ -143,7 +143,7 @@ void PRINT_cmd(unordered_map<string, Table> &tables) {
     }
 
     // Print column names
-    for(int col = 0; col < int(cols_to_print.size()); ++col) {
+    for(size_t col = 0; col < cols_to_print.size(); ++col) {
         cout << cols_to_print[col] << " ";
     }
     cout << "\n";
@@ -151,9 +151,9 @@ void PRINT_cmd(unordered_map<string, Table> &tables) {
     // Check if 'WHERE' or 'ALL'
     string choice;
     if(choice == "ALL") {
-        for(int row = 0; row < int(tables[table_name].data.size()); ++row) {
-            for(int col = 0; col < int(cols_to_print.size()); ++col) {
-                cout << tables[table_name].data[row][col_indices[col]];
+        for(size_t row = 0; row < tables[table_name].data.size(); ++row) {
+            for(size_t col = 0; col < cols_to_print.size(); ++col) {
+                cout << tables[table_name].data[row][(unsigned long)col_indices[col]];
                 cout << " ";
             }
             cout << "\n";

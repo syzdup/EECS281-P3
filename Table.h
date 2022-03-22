@@ -5,6 +5,10 @@
 class Table {
     public:
 
+    // Default ctor added to bypass compile error:
+    // std::unordered_map needs a default ctor provided for init
+    Table(){}
+
     Table(std::string name_in, std::vector<EntryType> types_in, std::vector<std::string> names_in)
         :name{name_in}, col_types{types_in}, col_names{names_in} { }
 
