@@ -3,13 +3,16 @@
 #include <string>
 
 class Table {
-    // Table ctor takes in vector of types and vector names
-    private:
-
-    std::string name;
-    
-    
-
     public:
 
+    Table(std::string name_in, std::vector<EntryType> types_in, std::vector<std::string> names_in)
+        :name{name_in}, col_types{types_in}, col_names{names_in} { }
+
+    // Metadata
+    std::string name;
+    std::vector<EntryType> col_types;
+    std::vector<std::string> col_names;
+
+    // Actual data
+    std::vector<std::vector<TableEntry> > data;
 };
