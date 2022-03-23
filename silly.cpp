@@ -40,6 +40,14 @@ int get_column_index(unordered_map<string, Table> &tables, string table_name, st
 }
 
 void CREATE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
+
+    /*
+
+
+        NOTE: turn into table ctor and add it to the vector of tables
+
+
+    */
     int num_cols;
     string table_name;
     vector<EntryType> col_types;
@@ -93,6 +101,14 @@ void CREATE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
 }
 
 void INSERT_cmd(unordered_map<string,Table> &tables, bool quiet_mode) {
+
+    /*
+
+
+        NOTE: create member function
+
+
+    */
     string junk;
     cin >> junk;
 
@@ -125,59 +141,6 @@ void INSERT_cmd(unordered_map<string,Table> &tables, bool quiet_mode) {
     }
 }
 
-void PRINT_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
-    string junk;
-    cin >> junk;
-    string table_name;
-    cin >> table_name;
-    size_t num_cols;
-    cin >> num_cols;
-
-    vector<string> cols_to_print;
-    vector<int> col_indices;
-    cols_to_print.reserve(num_cols);
-    col_indices.reserve(num_cols);
-
-    // Get column names
-    string temp_name;
-    for(size_t i = 0; i < num_cols; ++i) {
-        cin >> temp_name;
-        cols_to_print.push_back(temp_name);
-    }
-
-    // Get indices of columns to print
-    for(size_t i = 0; i < cols_to_print.size(); ++i) {
-        int col_index = get_column_index(tables, table_name, cols_to_print[i]);
-        if(col_index != -1) {
-            col_indices.push_back(col_index);
-        } else {
-            cout << "Error during PRINT: " << cols_to_print[i] << " does not name a column in " << table_name << "\n";
-        }
-    }
-
-    // Print column names
-    for(size_t col = 0; col < cols_to_print.size(); ++col) {
-        cout << cols_to_print[col] << " ";
-    }
-    cout << "\n";
-
-    // Check if 'WHERE' or 'ALL'
-    string choice;
-    cin >> choice;
-    if(choice == "ALL") {
-        for(size_t row = 0; row < tables[table_name].data.size(); ++row) {
-            for(size_t col = 0; col < cols_to_print.size(); ++col) {
-                cout << tables[table_name].data[row][(unsigned long)col_indices[col]];
-                cout << " ";
-            }
-            cout << "\n";
-        }
-    }
-    if(!quiet_mode) {
-        cout << "Printed " << tables[table_name].data.size() << " matching rows from " << table_name << "\n";
-    }
-}
-
 void REMOVE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
     string table_name;
     cin >> table_name;
@@ -188,11 +151,21 @@ void REMOVE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
             cout << "Table " << table_name << " deleted\n";
         }
     } else {
-        cout << "Error during REMOVE: "<<table_name << " does not name a table in the database\n";
-        string junk;
-        getline(cin, junk);
+        cout << "Error during REMOVE: " << table_name << " does not name a table in the database\n";
+        getline(cin, table_name);
     }
+}
 
+// break up into print all and print where, make member function of a table 
+// print where
+// 1) figure out column name (if it exists) -> type -> call helper with a table entry containing the type you are looking for -> 3-way split on comparison type
+// delete where
+// 1) stl function remove things O(n), overwrite and rearrange deleted things (functor accepts a row)
+void PRINT_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
+    string table_name;
+    cin >> table_name;
+    cin >> table_name;
+    tables[table_name].print(quiet_mode);
 }
 
 int main(int argc, char * argv[]) {
@@ -201,8 +174,6 @@ int main(int argc, char * argv[]) {
     cout << boolalpha;
 
     bool quiet_mode = false;
-    
-    // Main data structure: associates table names with a table structure
     unordered_map<string, Table> tables;
 
     vector<string> arguments(argv, argv + argc);
@@ -216,10 +187,7 @@ int main(int argc, char * argv[]) {
             }
         }
     }
-    // Start of program
     string cmd;
-
-    // For commands not yet implemented
     string junk;
     do {
         if(cin.fail()) {
@@ -232,7 +200,7 @@ int main(int argc, char * argv[]) {
         /*
             Performance note:
             
-            - can change to index strings instead of compare them
+            - can change to index strings instead of compare them? (how to find unrecognized commands)
         */
        
         if(cmd == "CREATE") {

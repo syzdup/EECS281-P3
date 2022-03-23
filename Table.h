@@ -1,4 +1,5 @@
 // Identifier: C0F4DFE8B340D81183C208F70F9D2D797908754D
+#include "TableEntry.h"
 #include <vector>
 #include <string>
 
@@ -19,4 +20,10 @@ class Table {
 
     // Actual data
     std::vector<std::vector<TableEntry> > data;
+
+    // Member functions
+    int get_column_index(std::string column_name);
+    void print(bool quiet_mode);
+    void print_all(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode);
+    void print_where(bool quiet_mode);
 };
