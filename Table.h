@@ -3,6 +3,30 @@
 #include <vector>
 #include <string>
 
+// Functor
+enum class CompType : uint8_t { Less, Greater, Equal };
+
+class Entry_Comp {
+    private:
+    size_t col_index;
+    TableEntry comp_val;
+    CompType comp_type;
+
+    public:
+    Entry_Comp(size_t col_index_in, TableEntry comp_val_in, CompType comp_type_in) 
+        : col_index(col_index_in), comp_val(comp_val_in), comp_type(comp_type_in) {}
+    
+    bool operator()(std::vector<TableEntry> row) {
+        if(comp_type == CompType::Less) {
+            return row[col_index] < comp_val;
+        } else if(comp_type == CompType::Greater) {
+            return row[col_index] > comp_val;
+        } else {
+            return row[col_index] == comp_val;
+        }
+    }
+};
+
 class Table {
     public:
 
@@ -22,26 +46,13 @@ class Table {
     std::vector<std::vector<TableEntry> > data;
 
     // Member functions
+    // Later: move helper functions to private
     TableEntry create_entry(EntryType current_type);
     int get_column_index(std::string column_name);
     void insert(bool quiet_mode);
     void print(bool quiet_mode);
     void print_all(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode);
+    void print_where_helper(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode, Entry_Comp entry_comparator);
     void print_where(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode);
     void delete_where(bool quiet_mode);
-};
-
-// Functors
-class Less_Comp {
-    private:
-    size_t col_index;
-    TableEntry comp_val;
-
-    public:
-    Less_Comp(size_t col_index_in, TableEntry comp_val_in) 
-        : col_index(col_index_in), comp_val(comp_val_in) {}
-    
-    bool operator()(std::vector<TableEntry> row) {
-        return row[col_index] < comp_val;
-    }
 };
