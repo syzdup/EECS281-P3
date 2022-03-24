@@ -96,7 +96,22 @@ void PRINT_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
     string table_name;
     cin >> table_name; // throw away ("FROM")
     cin >> table_name;
-    tables[table_name].print(quiet_mode);
+    if(tables.find(table_name) != tables.end()) {
+        tables[table_name].print(quiet_mode);
+    } else {
+        cout << "Error during PRINT: " << table_name << " does not name a table in the database\n";
+    }
+}
+
+void DELETE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
+    string table_name;
+    cin >> table_name; // throw away ("FROM")
+    cin >> table_name;
+    if(tables.find(table_name) != tables.end()) {
+        tables[table_name].delete_where(quiet_mode);
+    } else {
+        cout << "Error during PRINT: " << table_name << " does not name a table in the database\n";
+    }
 }
 
 int main(int argc, char * argv[]) {
@@ -132,6 +147,7 @@ int main(int argc, char * argv[]) {
             Performance note:
             
             - can change to index strings instead of compare them? (how to find unrecognized commands)
+            - consolidate _cmd functions 
         */
        
         if(cmd == "CREATE") {
@@ -143,7 +159,7 @@ int main(int argc, char * argv[]) {
         } else if(cmd == "REMOVE") {
             REMOVE_cmd(tables, quiet_mode);
         } else if(cmd == "DELETE") {
-            getline(cin, junk);
+            DELETE_cmd(tables, quiet_mode);
         } else if(cmd == "GENERATE") {
             getline(cin, junk);
         } else if(cmd == "JOIN") {

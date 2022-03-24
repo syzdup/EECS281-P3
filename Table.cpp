@@ -73,7 +73,7 @@ void Table::print(bool quiet_mode) {
     if(temp_name == "ALL") {
         print_all(cols_to_print, col_indices, quiet_mode);
     } else {
-        print_where(quiet_mode);
+        print_where(cols_to_print, col_indices, quiet_mode);
     }
 }
 
@@ -92,10 +92,37 @@ void Table::print_all(std::vector<std::string> &cols_to_print, std::vector<int> 
     std::cout << "Printed " << data.size() << " matching rows from " << name << "\n";
 }
 
-void Table::print_where(bool quiet_mode) {
-    if(!quiet_mode) {
-        std::cout << "Print where called\n";
+void Table::print_where(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode) {
+    std::string column_name;
+    std::string compare_operator;
+    int col_index;
+    size_t row_count = 0;
+    std::cin >> column_name;
+    std::cin >> compare_operator;
+    col_index = get_column_index(column_name);
+    EntryType compare_type = col_types[(unsigned long)col_index];
+
+    if(compare_operator == "<") {
+        Less_Comp less_comparator((unsigned long)col_index, create_entry(compare_type));
+
+        for(size_t row = 0; row < data.size(); ++row) {
+            if(less_comparator(data[row])) {
+                row_count += 1;
+                for(size_t col = 0; col < cols_to_print.size(); ++col) {
+                    if(!quiet_mode) {
+                        std::cout << data[row][(unsigned long)col_indices[col]];
+                        std::cout << " ";
+                    }
+                }
+            }
+            if(less_comparator(data[row])) {
+                if(!quiet_mode) {
+                    std::cout << "\n";
+                }
+            }
+        }
     }
+    std::cout << "Printed " << row_count << " matching rows from " << name << "\n";
 }
 
 void Table::insert(bool quiet_mode) {
@@ -112,7 +139,6 @@ void Table::insert(bool quiet_mode) {
         new_row.reserve(col_names.size());
 
         for(size_t j = 0; j < col_names.size(); ++j) {
-            //std::cout << "SECOND FOR LOOP ENTERED\n";
             EntryType current_type = col_types[j];
             new_row.emplace_back(create_entry(current_type));
         }
@@ -121,5 +147,20 @@ void Table::insert(bool quiet_mode) {
     if(!quiet_mode) {
         std::cout << "Added " << num_rows << " rows to " << name << " from position " << data.size() - num_rows <<
         " to " << data.size() - 1 << "\n";
+    }
+}
+
+void Table::delete_where(bool quiet_mode) {
+    std::string column_name;
+    std::cin >> column_name; // throw away ("WHERE")
+    std::cin >> column_name;
+
+    int col_index = get_column_index(column_name);
+    if(col_index != -1) {
+        if(!quiet_mode) {
+            std::cout << "delete where called\n";
+        }
+    } else {
+        std::cout << "Error during DELETE: " << column_name << " does not name a column in " << name << "\n";
     }
 }

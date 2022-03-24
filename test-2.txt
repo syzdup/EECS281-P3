@@ -23,7 +23,9 @@ Darden false true
 Angstadt true true
 REMOVE 281class
 PRINT FROM cities 3 population is_capital? name ALL
+PRINT FROM cities 2 name population WHERE population < 100000
 REMOVE cities
 PRINT FROM pets 2 name likes_dogs? ALL
+# PRINT FROM pets 2 name likes_cats? WHERE likes_cats? = true
 REMOVE pets
 QUIT
