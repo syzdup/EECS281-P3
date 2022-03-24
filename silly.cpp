@@ -9,52 +9,12 @@
 
 using namespace std;
 
-TableEntry create_entry(EntryType current_type) {
-    if(current_type == EntryType::Bool) {
-        bool bool_entry;
-        cin >> bool_entry;
-        return TableEntry(bool_entry);
-    } else if(current_type == EntryType::String) {
-        string string_entry;
-        cin >> string_entry;
-        return TableEntry(string_entry); 
-    } else if(current_type == EntryType::Int) {
-        int int_entry;
-        cin >> int_entry;
-        return TableEntry(int_entry);
-    } else {
-        double double_entry;
-        cin >> double_entry;
-        return TableEntry(double_entry);
-    }
-}
-
-// Returns an index of the column name where column_name matches the column. If it is not found, returns -1 as in index
-int get_column_index(unordered_map<string, Table> &tables, string table_name, string column_name) {
-    for(int i = 0; i < int(tables[table_name].col_names.size()); ++i) {
-        if(tables[table_name].col_names[(unsigned long)i] == column_name) {
-            return i;
-        }
-    }
-    return -1;
-}
-
 void CREATE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
-
-    /*
-
-
-        NOTE: turn into table ctor and add it to the vector of tables
-
-
-    */
     int num_cols;
     string table_name;
     vector<EntryType> col_types;
     vector<string> col_names;
-
     cin >> table_name >> num_cols;
-
     // Check for table in map
     if(tables.find(table_name) == tables.end()) {
         col_types.resize((unsigned long)num_cols);
@@ -101,41 +61,11 @@ void CREATE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
 }
 
 void INSERT_cmd(unordered_map<string,Table> &tables, bool quiet_mode) {
-
-    /*
-
-
-        NOTE: create member function
-
-
-    */
-    string junk;
-    cin >> junk;
-
     string table_name;
-    size_t num_rows;
+    cin >> table_name; // throw away ("INTO")
     cin >> table_name;
-    cin >> num_rows;
-    cin >> junk;
     if(tables.find(table_name) != tables.end()) {
-
-        size_t current_size = tables[table_name].data.size();
-        tables[table_name].data.reserve(current_size + num_rows);
-
-        for(size_t i = current_size; i < (unsigned long)(current_size + num_rows); ++i) {
-            vector<TableEntry> new_row;
-            new_row.reserve(tables[table_name].col_names.size());
-            for(size_t j = 0; j < tables[table_name].col_names.size(); ++j) {
-                EntryType current_type = tables[table_name].col_types[j];
-                new_row.emplace_back(create_entry(current_type));
-            }
-            tables[table_name].data.emplace_back(new_row);
-        }
-
-        if(!quiet_mode) {
-            cout << "Added " << num_rows << " rows to " << table_name << " from position " << tables[table_name].data.size() - num_rows <<
-            " to " << tables[table_name].data.size() - 1 << "\n";
-        }
+        tables[table_name].insert(quiet_mode);
     } else {
         cout << table_name << " is not the name of a table in the database\n";
     }
@@ -161,9 +91,10 @@ void REMOVE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
 // 1) figure out column name (if it exists) -> type -> call helper with a table entry containing the type you are looking for -> 3-way split on comparison type
 // delete where
 // 1) stl function remove things O(n), overwrite and rearrange deleted things (functor accepts a row)
+
 void PRINT_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
     string table_name;
-    cin >> table_name;
+    cin >> table_name; // throw away ("FROM")
     cin >> table_name;
     tables[table_name].print(quiet_mode);
 }

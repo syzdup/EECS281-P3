@@ -22,7 +22,9 @@ class Table {
     std::vector<std::vector<TableEntry> > data;
 
     // Member functions
+    TableEntry create_entry(EntryType current_type);
     int get_column_index(std::string column_name);
+    void insert(bool quiet_mode);
     void print(bool quiet_mode);
     void print_all(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode);
     void print_where(bool quiet_mode);

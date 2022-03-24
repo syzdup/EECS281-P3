@@ -4,6 +4,27 @@
 #include <vector>
 #include <string>
 
+// Returns a TableEntry object given an EntryType
+TableEntry Table::create_entry(EntryType current_type) {
+    if(current_type == EntryType::Bool) {
+        bool bool_entry;
+        std::cin >> bool_entry;
+        return TableEntry(bool_entry);
+    } else if(current_type == EntryType::String) {
+        std::string string_entry;
+        std::cin >> string_entry;
+        return TableEntry(string_entry); 
+    } else if(current_type == EntryType::Int) {
+        int int_entry;
+        std::cin >> int_entry;
+        return TableEntry(int_entry);
+    } else {
+        double double_entry;
+        std::cin >> double_entry;
+        return TableEntry(double_entry);
+    }
+}
+
 // Returns the index where 'column_name' matches the name of the column in the table
 int Table::get_column_index(std::string column_name) {
     for(int i = 0; i < int(col_names.size()); ++i) {
@@ -74,5 +95,31 @@ void Table::print_all(std::vector<std::string> &cols_to_print, std::vector<int> 
 void Table::print_where(bool quiet_mode) {
     if(!quiet_mode) {
         std::cout << "Print where called\n";
+    }
+}
+
+void Table::insert(bool quiet_mode) {
+    size_t num_rows;
+    std::string junk;
+    std::cin >> num_rows;
+    std::cin >> junk; // throw away ("ROWS")
+
+    data.reserve(data.size() + num_rows);
+    size_t end_size =  (unsigned long)(data.size() + num_rows);
+
+    for(size_t i = data.size(); i < end_size; ++i) {
+        std::vector<TableEntry> new_row;
+        new_row.reserve(col_names.size());
+
+        for(size_t j = 0; j < col_names.size(); ++j) {
+            //std::cout << "SECOND FOR LOOP ENTERED\n";
+            EntryType current_type = col_types[j];
+            new_row.emplace_back(create_entry(current_type));
+        }
+        data.emplace_back(new_row);
+    }
+    if(!quiet_mode) {
+        std::cout << "Added " << num_rows << " rows to " << name << " from position " << data.size() - num_rows <<
+        " to " << data.size() - 1 << "\n";
     }
 }
