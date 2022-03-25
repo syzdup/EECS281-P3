@@ -3,7 +3,7 @@
 #include <vector>
 #include <string>
 
-// Functor
+// Functor (Paoletti video said this is bad and slow, make three functors)
 enum class CompType : uint8_t { Less, Greater, Equal };
 
 class Entry_Comp {
@@ -54,5 +54,6 @@ class Table {
     void print_all(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode);
     void print_where_helper(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode, Entry_Comp entry_comparator);
     void print_where(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode);
+    void delete_where_helper(Entry_Comp entry_comparator, bool quiet_mode);
     void delete_where(bool quiet_mode);
 };

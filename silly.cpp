@@ -144,7 +144,7 @@ int main(int argc, char * argv[]) {
         cin >> cmd;
 
         /*
-            Performance note:
+            Performance notes:
             
             - can change to index strings instead of compare them? (how to find unrecognized commands)
             - consolidate _cmd functions 

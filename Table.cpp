@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 // Returns a TableEntry object given an EntryType
 TableEntry Table::create_entry(EntryType current_type) {
@@ -160,17 +161,40 @@ void Table::insert(bool quiet_mode) {
     }
 }
 
+void Table::delete_where_helper(Entry_Comp entry_comparator, bool quiet_mode) {
+    size_t rows_deleted = 0;
+    for(size_t row = 0; row < data.size(); ++row) {
+        if(entry_comparator(data[row])) {
+            rows_deleted += 1;
+            data.erase(data.begin() + (int)row);
+        }
+
+        // auto it = std::remove_if(data.begin(), data.end(), entry_comparator(data[row]));
+        // data.erase(it, data.end());
+    }
+    if(!quiet_mode) {
+        std::cout << "Deleted " << rows_deleted << " rows from " << name << "\n";
+    }
+}
+
 void Table::delete_where(bool quiet_mode) {
     std::string column_name;
     std::cin >> column_name; // throw away ("WHERE")
     std::cin >> column_name;
-
-    int col_index = get_column_index(column_name);
-    if(col_index != -1) {
-        if(!quiet_mode) {
-            std::cout << "delete where called\n";
-        }
+    std::string compare_operator;
+    int col_index;
+    std::cin >> compare_operator;
+    col_index = get_column_index(column_name);
+    EntryType compare_type = col_types[(unsigned long)col_index];
+    
+    if(compare_operator == "<") {
+        Entry_Comp entry_comparator((unsigned long)col_index, create_entry(compare_type), CompType::Less);
+        delete_where_helper(entry_comparator, quiet_mode);
+    } else if(compare_operator == ">") {
+        Entry_Comp entry_comparator((unsigned long)col_index, create_entry(compare_type), CompType::Greater);
+        delete_where_helper(entry_comparator, quiet_mode);
     } else {
-        std::cout << "Error during DELETE: " << column_name << " does not name a column in " << name << "\n";
+        Entry_Comp entry_comparator((unsigned long)col_index, create_entry(compare_type), CompType::Equal);
+        delete_where_helper(entry_comparator, quiet_mode);
     }
 }

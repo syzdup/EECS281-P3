@@ -9,5 +9,7 @@ Albany New_York 98111 21.93 true
 Chicago Illinois 2705000 234 false
 St_Louis Missouri 315685 65.98 false
 PRINT FROM cities 2 name state ALL
+DELETE FROM cities WHERE population > 800000
+PRINT FROM cities 2 name state ALL
 REMOVE cities
 QUIT
