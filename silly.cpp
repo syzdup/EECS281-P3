@@ -60,26 +60,24 @@ void CREATE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
     }
 }
 
-void INSERT_cmd(unordered_map<string,Table> &tables, bool quiet_mode) {
+void INSERT_cmd(unordered_map<string,Table> &tables) {
     string table_name;
     cin >> table_name; // throw away ("INTO")
     cin >> table_name;
     if(tables.find(table_name) != tables.end()) {
-        tables[table_name].insert(quiet_mode);
+        tables[table_name].insert();
     } else {
         cout << table_name << " is not the name of a table in the database\n";
     }
 }
 
-void REMOVE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
+void REMOVE_cmd(unordered_map<string, Table> &tables) {
     string table_name;
     cin >> table_name;
 
     if(tables.find(table_name) != tables.end()) {
         tables.erase(table_name);
-        if(!quiet_mode) {
-            cout << "Table " << table_name << " deleted\n";
-        }
+        cout << "Table " << table_name << " deleted\n";
     } else {
         cout << "Error during REMOVE: " << table_name << " does not name a table in the database\n";
         getline(cin, table_name);
@@ -103,12 +101,12 @@ void PRINT_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
     }
 }
 
-void DELETE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
+void DELETE_cmd(unordered_map<string, Table> &tables) {
     string table_name;
     cin >> table_name; // throw away ("FROM")
     cin >> table_name;
     if(tables.find(table_name) != tables.end()) {
-        tables[table_name].delete_where(quiet_mode);
+        tables[table_name].delete_where();
     } else {
         cout << "Error during PRINT: " << table_name << " does not name a table in the database\n";
     }
@@ -149,27 +147,28 @@ int main(int argc, char * argv[]) {
             - can change to index strings instead of compare them? (how to find unrecognized commands)
             - consolidate _cmd functions 
         */
-       
-        if(cmd == "CREATE") {
+        if(cmd[0] == '#') {
+            string junk;
+            getline(cin, junk);
+        } else if(cmd == "CREATE") {
             CREATE_cmd(tables, quiet_mode);
         } else if(cmd == "INSERT") {
-            INSERT_cmd(tables, quiet_mode);
+            INSERT_cmd(tables);
         } else if(cmd == "PRINT") {
             PRINT_cmd(tables, quiet_mode);
         } else if(cmd == "REMOVE") {
-            REMOVE_cmd(tables, quiet_mode);
+            REMOVE_cmd(tables);
         } else if(cmd == "DELETE") {
-            DELETE_cmd(tables, quiet_mode);
+            DELETE_cmd(tables);
         } else if(cmd == "GENERATE") {
             getline(cin, junk);
         } else if(cmd == "JOIN") {
             getline(cin, junk);
-        } else if(cmd == "#") {
-            string junk;
-            getline(cin, junk);
-        } else if(cmd != "QUIT"){
-            cout << "Error: unrecognized command\n";
-            getline(cin, junk);
+        } else {
+            if(cmd != "QUIT") {
+                cout << "Error: unrecognized command\n";
+                getline(cin, junk);
+            }
         }
     } while(cmd != "QUIT");
 

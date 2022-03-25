@@ -139,7 +139,7 @@ void Table::print_where(std::vector<std::string> &cols_to_print, std::vector<int
     }
 }
 
-void Table::insert(bool quiet_mode) {
+void Table::insert() {
     size_t num_rows;
     std::string junk;
     std::cin >> num_rows;
@@ -158,24 +158,11 @@ void Table::insert(bool quiet_mode) {
         }
         data.emplace_back(new_row);
     }
-    if(!quiet_mode) {
-        std::cout << "Added " << num_rows << " rows to " << name << " from position " << data.size() - num_rows <<
-        " to " << data.size() - 1 << "\n";
-    }
+    std::cout << "Added " << num_rows << " rows to " << name << " from position " << data.size() - num_rows <<
+    " to " << data.size() - 1 << "\n";
 }
 
-// void Table::delete_where_helper(Entry_Comp entry_comparator, bool quiet_mode) {
-//     size_t rows_deleted = 0;
-
-//     auto it = std::remove_if(data.begin(), data.end(), entry_comparator(data[row]));
-//     data.erase(it, data.end());
-
-//     if(!quiet_mode) {
-//         std::cout << "Deleted " << rows_deleted << " rows from " << name << "\n";
-//     }
-// }
-
-void Table::delete_where(bool quiet_mode) {
+void Table::delete_where() {
     size_t rows_deleted = data.size();
     std::string column_name;
     std::cin >> column_name; // throw away ("WHERE")
@@ -197,10 +184,7 @@ void Table::delete_where(bool quiet_mode) {
     } else {
         auto it = std::remove_if(data.begin(), data.end(), Entry_Comp((unsigned long)col_index, create_entry(compare_type), CompType::Equal));
         data.erase(it, data.end());
-
     }
     rows_deleted -= data.size();
-    if(!quiet_mode) {
-        std::cout << "Deleted " << rows_deleted << " rows from " << name << "\n";
-    }
+    std::cout << "Deleted " << rows_deleted << " rows from " << name << "\n";
 }

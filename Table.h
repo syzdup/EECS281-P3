@@ -49,11 +49,10 @@ class Table {
     // Later: move helper functions to private
     TableEntry create_entry(EntryType current_type);
     int get_column_index(std::string column_name);
-    void insert(bool quiet_mode);
+    void insert();
     void print(bool quiet_mode);
     void print_all(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode);
     void print_where_helper(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode, Entry_Comp entry_comparator);
     void print_where(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode);
-    void delete_where_helper(Entry_Comp entry_comparator, bool quiet_mode);
-    void delete_where(bool quiet_mode);
+    void delete_where();
 };
