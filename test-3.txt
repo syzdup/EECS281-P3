@@ -1,6 +1,7 @@
 # Basic command testing
 #
 CREATE cities 5 string string int double bool name state population area is_capital?
+CREATE people 3 int string int age fav_food happiness_level
 INSERT INTO cities 7 ROWS
 Ann_Arbor Michigan 120782 28.69 false
 Lansing Michigan 116020 36.68 true
@@ -9,8 +10,16 @@ San_Francisco California 864816 46.87 false
 Albany New_York 98111 21.93 true
 Chicago Illinois 2705000 234 false
 St_Louis Missouri 315685 65.98 false
+INSERT INTO people 3 ROWS 
+19 carrot 5
+45 pie 89
+3 banana 100
+PRINT FROM people 2 age fav_food WHERE happiness_level > 50
 PRINT FROM cities 2 name state ALL
 DELETE FROM cities WHERE population > 800000
 PRINT FROM cities 2 name state ALL
+PRINT FROM cities 2 name state where population = 98111
+# REMOVE cities
+# QUIT
 REMOVE cities
 QUIT

@@ -122,6 +122,9 @@ void Table::print_where(std::vector<std::string> &cols_to_print, std::vector<int
     std::cin >> column_name;
     std::cin >> compare_operator;
     col_index = get_column_index(column_name);
+    if(col_index == -1) {
+        std::cout << column_name << " is not the name of a column in the table specified by " << name << "\n";
+    }
     EntryType compare_type = col_types[(unsigned long)col_index];
     
     if(compare_operator == "<") {
@@ -173,7 +176,7 @@ void Table::insert(bool quiet_mode) {
 // }
 
 void Table::delete_where(bool quiet_mode) {
-    size_t rows_deleted = 0;
+    size_t rows_deleted = data.size();
     std::string column_name;
     std::cin >> column_name; // throw away ("WHERE")
     std::cin >> column_name;
@@ -196,6 +199,7 @@ void Table::delete_where(bool quiet_mode) {
         data.erase(it, data.end());
 
     }
+    rows_deleted -= data.size();
     if(!quiet_mode) {
         std::cout << "Deleted " << rows_deleted << " rows from " << name << "\n";
     }
