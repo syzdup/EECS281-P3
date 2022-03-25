@@ -161,23 +161,19 @@ void Table::insert(bool quiet_mode) {
     }
 }
 
-void Table::delete_where_helper(Entry_Comp entry_comparator, bool quiet_mode) {
-    size_t rows_deleted = 0;
-    for(size_t row = 0; row < data.size(); ++row) {
-        if(entry_comparator(data[row])) {
-            rows_deleted += 1;
-            data.erase(data.begin() + (int)row);
-        }
+// void Table::delete_where_helper(Entry_Comp entry_comparator, bool quiet_mode) {
+//     size_t rows_deleted = 0;
 
-        // auto it = std::remove_if(data.begin(), data.end(), entry_comparator(data[row]));
-        // data.erase(it, data.end());
-    }
-    if(!quiet_mode) {
-        std::cout << "Deleted " << rows_deleted << " rows from " << name << "\n";
-    }
-}
+//     auto it = std::remove_if(data.begin(), data.end(), entry_comparator(data[row]));
+//     data.erase(it, data.end());
+
+//     if(!quiet_mode) {
+//         std::cout << "Deleted " << rows_deleted << " rows from " << name << "\n";
+//     }
+// }
 
 void Table::delete_where(bool quiet_mode) {
+    size_t rows_deleted = 0;
     std::string column_name;
     std::cin >> column_name; // throw away ("WHERE")
     std::cin >> column_name;
@@ -188,13 +184,19 @@ void Table::delete_where(bool quiet_mode) {
     EntryType compare_type = col_types[(unsigned long)col_index];
     
     if(compare_operator == "<") {
-        Entry_Comp entry_comparator((unsigned long)col_index, create_entry(compare_type), CompType::Less);
-        delete_where_helper(entry_comparator, quiet_mode);
+        auto it = std::remove_if(data.begin(), data.end(), Entry_Comp((unsigned long)col_index, create_entry(compare_type), CompType::Less));
+        data.erase(it, data.end());
+
     } else if(compare_operator == ">") {
-        Entry_Comp entry_comparator((unsigned long)col_index, create_entry(compare_type), CompType::Greater);
-        delete_where_helper(entry_comparator, quiet_mode);
+        auto it = std::remove_if(data.begin(), data.end(), Entry_Comp((unsigned long)col_index, create_entry(compare_type), CompType::Greater));
+        data.erase(it, data.end());
+        
     } else {
-        Entry_Comp entry_comparator((unsigned long)col_index, create_entry(compare_type), CompType::Equal);
-        delete_where_helper(entry_comparator, quiet_mode);
+        auto it = std::remove_if(data.begin(), data.end(), Entry_Comp((unsigned long)col_index, create_entry(compare_type), CompType::Equal));
+        data.erase(it, data.end());
+
+    }
+    if(!quiet_mode) {
+        std::cout << "Deleted " << rows_deleted << " rows from " << name << "\n";
     }
 }

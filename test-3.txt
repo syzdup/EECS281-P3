@@ -1,4 +1,5 @@
 # Basic command testing
+#
 CREATE cities 5 string string int double bool name state population area is_capital?
 INSERT INTO cities 7 ROWS
 Ann_Arbor Michigan 120782 28.69 false

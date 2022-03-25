@@ -9,7 +9,7 @@
             "type": "lldb",
             "request": "launch",
             "program": "${workspaceFolder}/silly_debug",
-            "args": [],
+            "args": ["<", "${workspaceFolder}/test-3.txt"],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],

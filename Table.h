@@ -16,7 +16,7 @@ class Entry_Comp {
     Entry_Comp(size_t col_index_in, TableEntry comp_val_in, CompType comp_type_in) 
         : col_index(col_index_in), comp_val(comp_val_in), comp_type(comp_type_in) {}
     
-    bool operator()(std::vector<TableEntry> row) {
+    bool operator()(const std::vector<TableEntry> &row) {
         if(comp_type == CompType::Less) {
             return row[col_index] < comp_val;
         } else if(comp_type == CompType::Greater) {
