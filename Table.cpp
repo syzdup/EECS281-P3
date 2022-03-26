@@ -59,7 +59,9 @@ void Table::print(bool quiet_mode) {
             col_indices.push_back(col_index);
         // if a column provided by input does not match any column in table
         } else {
+            getline(std::cin, temp_name);
             std::cout << "Error during PRINT: " << cols_to_print[i] << " does not name a column in " << name << "\n";
+            return;
         }
     }
     // Print column names
@@ -123,7 +125,9 @@ void Table::print_where(std::vector<std::string> &cols_to_print, std::vector<int
     std::cin >> compare_operator;
     col_index = get_column_index(column_name);
     if(col_index == -1) {
+        getline(std::cin, compare_operator);
         std::cout << column_name << " is not the name of a column in the table specified by " << name << "\n";
+        return;
     }
     EntryType compare_type = col_types[(unsigned long)col_index];
     
@@ -171,6 +175,11 @@ void Table::delete_where() {
     int col_index;
     std::cin >> compare_operator;
     col_index = get_column_index(column_name);
+    if(col_index == -1) {
+        getline(std::cin, compare_operator);
+        std::cout << column_name << " is not the name of a column in the table specified by " << name << "\n";
+        return;
+    }
     EntryType compare_type = col_types[(unsigned long)col_index];
     
     if(compare_operator == "<") {

@@ -61,17 +61,21 @@ void CREATE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
 }
 
 void INSERT_cmd(unordered_map<string,Table> &tables) {
+    std::string junk;
     string table_name;
     cin >> table_name; // throw away ("INTO")
     cin >> table_name;
+    // input number and getline rows if wrong
     if(tables.find(table_name) != tables.end()) {
         tables[table_name].insert();
     } else {
+        getline(std::cin, junk);
         cout << table_name << " is not the name of a table in the database\n";
     }
 }
 
 void REMOVE_cmd(unordered_map<string, Table> &tables) {
+    std::string junk;
     string table_name;
     cin >> table_name;
 
@@ -79,8 +83,8 @@ void REMOVE_cmd(unordered_map<string, Table> &tables) {
         tables.erase(table_name);
         cout << "Table " << table_name << " deleted\n";
     } else {
+        getline(cin, junk);
         cout << "Error during REMOVE: " << table_name << " does not name a table in the database\n";
-        getline(cin, table_name);
     }
 }
 
@@ -91,24 +95,28 @@ void REMOVE_cmd(unordered_map<string, Table> &tables) {
 // 1) stl function remove things O(n), overwrite and rearrange deleted things (functor accepts a row)
 
 void PRINT_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
+    std::string junk;
     string table_name;
     cin >> table_name; // throw away ("FROM")
     cin >> table_name;
     if(tables.find(table_name) != tables.end()) {
         tables[table_name].print(quiet_mode);
     } else {
+        getline(std::cin, junk);
         cout << "Error during PRINT: " << table_name << " does not name a table in the database\n";
     }
 }
 
 void DELETE_cmd(unordered_map<string, Table> &tables) {
+    std::string junk;
     string table_name;
     cin >> table_name; // throw away ("FROM")
     cin >> table_name;
     if(tables.find(table_name) != tables.end()) {
         tables[table_name].delete_where();
     } else {
-        cout << "Error during PRINT: " << table_name << " does not name a table in the database\n";
+        getline(std::cin, junk);
+        cout << "Error during DELETE: " << table_name << " does not name a table in the database\n";
     }
 }
 
@@ -140,10 +148,8 @@ int main(int argc, char * argv[]) {
         }
         cout << "% ";
         cin >> cmd;
-
         /*
             Performance notes:
-            
             - can change to index strings instead of compare them? (how to find unrecognized commands)
             - consolidate _cmd functions 
         */
@@ -166,8 +172,8 @@ int main(int argc, char * argv[]) {
             getline(cin, junk);
         } else {
             if(cmd != "QUIT") {
-                cout << "Error: unrecognized command\n";
                 getline(cin, junk);
+                cout << "Error: unrecognized command\n";
             }
         }
     } while(cmd != "QUIT");
