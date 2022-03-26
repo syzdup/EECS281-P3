@@ -1,0 +1,15 @@
+# Join test
+CREATE roommates 3 string string int name fav_food age
+INSERT INTO roommates 3 ROWS
+Marshall banana 19
+Maanav chicken 20
+Charlie rice 19
+CREATE friends 3 string string int person fav_genre songs
+INSERT INTO friends 3 ROWS
+Mason rock 2000
+Maanav rock 1384
+Marshall jazz 1578
+JOIN roommates AND friends WHERE name = person AND PRINT 3 name 1 fav_genre 2 age 1
+REMOVE roommates
+REMOVE friends
+QUIT

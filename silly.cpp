@@ -9,6 +9,7 @@
 
 using namespace std;
 
+// Creates a table
 void CREATE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
     int num_cols;
     string table_name;
@@ -19,7 +20,6 @@ void CREATE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
     if(tables.find(table_name) == tables.end()) {
         col_types.resize((unsigned long)num_cols);
         col_names.resize((unsigned long)num_cols);
-
         // Read column types
         for(int i = 0; i < num_cols; ++i) {
             string temp;
@@ -38,11 +38,9 @@ void CREATE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
         // Read column names 
         for(int i = 0; i < num_cols; ++i) {
             string temp;
-
             cin >> temp;
             col_names[(unsigned long)i] = temp;
         }
-
         // Create table object and add it to map
         Table new_table(table_name, col_types, col_names);
         tables.insert({table_name, new_table});
@@ -54,12 +52,14 @@ void CREATE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
             }
             cout << "created\n";
         }
-
     } else {
+        std::string junk;
+        getline(std::cin, junk);
         cout << "Error during CREATE: Cannot create already existing table " << table_name << "\n";
     }
 }
 
+// Makes a call to "insert()" member function of table
 void INSERT_cmd(unordered_map<string,Table> &tables) {
     std::string junk;
     string table_name;
@@ -70,10 +70,11 @@ void INSERT_cmd(unordered_map<string,Table> &tables) {
         tables[table_name].insert();
     } else {
         getline(std::cin, junk);
-        cout << table_name << " is not the name of a table in the database\n";
+        cout << "Error during INSERT: " << table_name << " does not name a table in the database\n";
     }
 }
 
+// Calls ".erase()" on the specified table in map
 void REMOVE_cmd(unordered_map<string, Table> &tables) {
     std::string junk;
     string table_name;
@@ -88,12 +89,7 @@ void REMOVE_cmd(unordered_map<string, Table> &tables) {
     }
 }
 
-// break up into print all and print where, make member function of a table 
-// print where
-// 1) figure out column name (if it exists) -> type -> call helper with a table entry containing the type you are looking for -> 3-way split on comparison type
-// delete where
-// 1) stl function remove things O(n), overwrite and rearrange deleted things (functor accepts a row)
-
+// Makes a call to "print(bool quiet_mode)" member function of table
 void PRINT_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
     std::string junk;
     string table_name;
@@ -107,6 +103,133 @@ void PRINT_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
     }
 }
 
+void print_joined_row(unordered_map<std::string, Table> &tables, std::string table_first, std::string table_second, std::vector<std::string> 
+                      &print_cols, std::vector<int> &table_num, size_t row_first, size_t row_second, bool quiet_mode) {
+
+    for(size_t col = 0; col < print_cols.size(); ++col) {
+        if(table_num[col] == 1) {
+            if(!quiet_mode) {
+                std::cout << tables[table_first].data[row_first][(unsigned long)tables[table_first].get_column_index(print_cols[col])] << " ";
+            }
+        } else {
+            if(!quiet_mode) {
+                std::cout << tables[table_second].data[row_second][(unsigned long)tables[table_second].get_column_index(print_cols[col])] << " ";
+            }
+        }
+    }
+    std::cout << "\n";
+}
+
+// Does the heavy lifting for JOIN
+void JOIN_helper(unordered_map<std::string, Table> &tables, std::string table_first, std::string col_first, std::string table_second, std::string col_second, bool quiet_mode) {
+    size_t num_cols;
+    std::cin >> num_cols;
+
+    std::vector<std::string> print_cols;
+    print_cols.reserve(num_cols);
+    std::vector<int> table_num;
+    table_num.reserve(num_cols);
+
+    std::string col;
+    int num;
+    for(size_t i = 0; i < num_cols; ++i) {
+        std::cin >> col;
+        std::cin >> num;
+        print_cols.push_back(col);
+        table_num.push_back(num);
+    }
+    // Check that cols exist
+    for(size_t i = 0; i < num_cols; ++i) {
+        if(table_num[i] == 1) {
+            if(tables[table_first].get_column_index(print_cols[i]) == -1) {
+                std::cout << "Error during JOIN: " << print_cols[i] << " is not the name of a column in the table specified by " << table_first << "\n";
+                return;
+            }
+        } else {
+            if(tables[table_second].get_column_index(print_cols[i]) == -1) {
+                std::cout << "Error during JOIN: " << print_cols[i] << " is not the name of a column in the table specified by " << table_second << "\n";
+                return;
+            }
+        }
+    }
+    size_t matched_rows = 0;
+    size_t col_first_indice = (unsigned long)(tables[table_first].get_column_index(col_first));
+    size_t col_second_indice = (unsigned long)(tables[table_second].get_column_index(col_second));
+
+    // Print column names
+    for(size_t col = 0; col < print_cols.size(); ++col) {
+        std::cout << print_cols[col] << " ";
+    }
+    std::cout << "\n";
+
+    for(size_t row_tbl_one = 0; row_tbl_one < tables[table_first].data.size(); ++row_tbl_one) {
+        for(size_t row_tbl_two = 0; row_tbl_two < tables[table_second].data.size(); ++ row_tbl_two) {
+            if(tables[table_first].data[row_tbl_one][col_first_indice] == tables[table_second].data[row_tbl_two][col_second_indice]) {
+                matched_rows += 1;
+                print_joined_row(tables, table_first, table_second, print_cols, table_num, row_tbl_one, row_tbl_two, quiet_mode);
+            }
+        }
+    }
+    std::cout << "Printed " << matched_rows << " rows from joining " << table_first << " to " << table_second << "\n";
+}
+
+// Looks for the index of the columns specified and returns whether the column name exists inside of the table
+bool verify_join_columns(unordered_map<std::string, Table> &tables, std::string table, std::string col) {
+    if(tables[table].get_column_index(col) == -1) {
+        return false;
+    }
+    return true;
+}
+
+// Reads input, does some error handling, calls helper function
+void JOIN_cmd(unordered_map<std::string, Table> &tables, bool quiet_mode) {
+    std::string table_first;
+    std::string table_second;
+    std::string junk;
+
+    std::cin >> table_first;
+    std::cin >> junk; // throw away ("AND")
+    std::cin >> table_second;
+
+    if(tables.find(table_first) != tables.end()) {
+        if(tables.find(table_second) != tables.end()) {
+            // join
+            std::cin >> junk; // throw away ("WHERE")
+            std::string col_first;
+            std::string col_second;
+
+            std::cin >> col_first;
+            std::cin >> junk; // throw away ("=", it is implied because no other operator can be specified)
+            std::cin >> col_second;
+
+            if(!verify_join_columns(tables, table_first, col_first)) {
+                getline(std::cin, junk);
+                std::cout << "Error during JOIN: " << col_first << " is not the name of a column in the table specified by " << table_first << "\n";
+                return;
+            } else if(!verify_join_columns(tables, table_second, col_second)) {
+                getline(std::cin, junk);
+                std::cout << "Error during JOIN: " << col_second << " is not the name of a column in the table specified by " << table_second << "\n";
+                return;
+            }
+
+            std::cin >> junk; // throw away ("AND")
+            std::cin >> junk; // throw away ("PRINT")
+
+            // *** call to helper function ***
+            JOIN_helper(tables, table_first, col_first, table_second, col_second, quiet_mode);
+
+        } else {
+            getline(std::cin, junk);
+            std::cout << "Error during JOIN: " << table_second << " does not name a table in the database\n";
+
+        }
+    } else {
+        getline(std::cin, junk);
+        std::cout << "Error during JOIN: " << table_first << " does not name a table in the database\n";
+    }
+}
+
+// Makes a call to "delete_where()" member function of table
 void DELETE_cmd(unordered_map<string, Table> &tables) {
     std::string junk;
     string table_name;
@@ -169,7 +292,7 @@ int main(int argc, char * argv[]) {
         } else if(cmd == "GENERATE") {
             getline(cin, junk);
         } else if(cmd == "JOIN") {
-            getline(cin, junk);
+            JOIN_cmd(tables, quiet_mode);
         } else {
             if(cmd != "QUIT") {
                 getline(cin, junk);

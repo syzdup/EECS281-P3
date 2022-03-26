@@ -26,7 +26,7 @@ TableEntry Table::create_entry(EntryType current_type) {
     }
 }
 
-// Returns the index where 'column_name' matches the name of the column in the table
+// Returns the index where 'column_name' matches the name of the column in the table: O(n)
 int Table::get_column_index(std::string column_name) {
     for(int i = 0; i < int(col_names.size()); ++i) {
         if(col_names[(unsigned long)i] == column_name) {
@@ -177,7 +177,7 @@ void Table::delete_where() {
     col_index = get_column_index(column_name);
     if(col_index == -1) {
         getline(std::cin, compare_operator);
-        std::cout << column_name << " is not the name of a column in the table specified by " << name << "\n";
+        std::cout << "Error during delete: " << column_name << " does not name a column in " << name << "\n";
         return;
     }
     EntryType compare_type = col_types[(unsigned long)col_index];
