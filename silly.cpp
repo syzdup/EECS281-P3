@@ -120,6 +120,36 @@ void print_joined_row(unordered_map<std::string, Table> &tables, std::string tab
     std::cout << "\n";
 }
 
+void join_with_index(unordered_map<string, Table> &tables, string table_first, size_t col_first_indice, 
+string table_second, size_t col_second_indice, bool quiet_mode, int indexed_tbl, std::vector<std::string> &print_cols, std::vector<int> &table_num) {
+    size_t matched_rows = 0;
+    if(indexed_tbl == 1) {
+        // column already indexed
+        for(size_t i = 0; i < tables[table_first].data.size(); ++i) {
+            if(tables[table_second].hash_index.find(tables[table_first].data[i][col_first_indice]) != tables[table_second].hash_index.end()) {
+                matched_rows += 1;
+                for(size_t j = 0; j < tables[table_second].hash_index[tables[table_first].data[i][col_first_indice]].size(); ++j) {
+                    print_joined_row(tables, table_first, table_second, print_cols, table_num, i, j, quiet_mode);
+                }
+            } 
+        }
+    } else {
+        // generate a temporary index
+        unordered_map<TableEntry, vector<size_t> > temp_index;
+        for(size_t row = 0; row < tables[table_second].data.size(); ++row) {
+            temp_index[tables[table_second].data[row][(unsigned long)col_second_indice]].push_back(row);
+        }
+        for(size_t i = 0; i < tables[table_first].data.size(); ++i) {
+            if(temp_index.find(tables[table_first].data[i][col_first_indice]) != temp_index.end()) {
+                matched_rows += 1;
+                for(size_t j = 0; j < temp_index[tables[table_first].data[i][col_first_indice]].size(); ++j) {
+                    print_joined_row(tables, table_first, table_second, print_cols, table_num, i, j, quiet_mode);
+                }
+            }
+        }
+    }
+    std::cout << "Printed " << matched_rows << " rows from joining " << table_first << " to " << table_second << "\n";
+}
 // Does the heavy lifting for JOIN
 void JOIN_helper(unordered_map<std::string, Table> &tables, std::string table_first, std::string col_first, std::string table_second, std::string col_second, bool quiet_mode) {
     size_t num_cols;
@@ -152,25 +182,22 @@ void JOIN_helper(unordered_map<std::string, Table> &tables, std::string table_fi
             }
         }
     }
-    size_t matched_rows = 0;
     size_t col_first_indice = (unsigned long)(tables[table_first].get_column_index(col_first));
     size_t col_second_indice = (unsigned long)(tables[table_second].get_column_index(col_second));
-
     // Print column names
     for(size_t col = 0; col < print_cols.size(); ++col) {
         std::cout << print_cols[col] << " ";
     }
     std::cout << "\n";
-
-    for(size_t row_tbl_one = 0; row_tbl_one < tables[table_first].data.size(); ++row_tbl_one) {
-        for(size_t row_tbl_two = 0; row_tbl_two < tables[table_second].data.size(); ++ row_tbl_two) {
-            if(tables[table_first].data[row_tbl_one][col_first_indice] == tables[table_second].data[row_tbl_two][col_second_indice]) {
-                matched_rows += 1;
-                print_joined_row(tables, table_first, table_second, print_cols, table_num, row_tbl_one, row_tbl_two, quiet_mode);
-            }
-        }
+    // Check for generated index
+    // *** change later *** using integers to determine which table(s) have the index
+    // case 1: second table has an indexed column 
+    // case 2: second table has no indexed column (create one)
+    if(tables[table_second].indexed_column == col_second_indice && tables[table_second].hash_index_on) {
+        join_with_index(tables, table_first, col_first_indice, table_second, col_second_indice, quiet_mode, 1, print_cols, table_num);
+    } else {
+        join_with_index(tables, table_first, col_first_indice, table_second, col_second_indice, quiet_mode, 0, print_cols, table_num);
     }
-    std::cout << "Printed " << matched_rows << " rows from joining " << table_first << " to " << table_second << "\n";
 }
 
 // Looks for the index of the columns specified and returns whether the column name exists inside of the table
