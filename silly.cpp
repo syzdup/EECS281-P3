@@ -204,11 +204,11 @@ void JOIN_cmd(unordered_map<std::string, Table> &tables, bool quiet_mode) {
 
             if(!verify_join_columns(tables, table_first, col_first)) {
                 getline(std::cin, junk);
-                std::cout << "Error during JOIN: " << col_first << " is not the name of a column in the table specified by " << table_first << "\n";
+                std::cout << "Error during JOIN: " << col_first << " does not name a column in " << table_first << "\n";
                 return;
             } else if(!verify_join_columns(tables, table_second, col_second)) {
                 getline(std::cin, junk);
-                std::cout << "Error during JOIN: " << col_second << " is not the name of a column in the table specified by " << table_second << "\n";
+                std::cout << "Error during JOIN: " << col_second << " does not name a column in " << table_second << "\n";
                 return;
             }
 

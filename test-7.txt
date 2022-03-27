@@ -1,18 +1,12 @@
 # Generate then insert/delete then print then join
 CREATE 281class 3 string string bool emotion person Y/N
-INSERT INTO 281class 8 ROWS
+INSERT INTO 281class 1 ROWS
 happy Darden true
-stressed students false
-busy office_hours true
-stressed students true
-stressed Paoletti true
-happy Darden true
-happy Sith true
-victorious Sith true
 CREATE 281class2 3 string string int emotion name age
-INSERT INTO 281class2 8 ROWS
+INSERT INTO 281class2 2 ROWS
 sad Darden 23
 stressed me 20
+INSERT INTO 281class2 6 ROWS
 full office_hours 10
 stressed students 20
 stressed Paoletti 23
@@ -21,9 +15,27 @@ happy Sith 30
 victorious Sith 9
 GENERATE FOR 281class hash INDEX ON person
 GENERATE FOR 281class2 bst INDEX ON age
+INSERT INTO 281class 7 ROWS
+stressed students false
+busy office_hours true
+stressed students true
+stressed Paoletti true
+happy Darden true
+happy Sith true
+victorious Sith true
 INSERT INTO 281class 2 ROWS
 angry bee true
 busy bee false
+INSERT INTO 281class 2 ROWS
+angry bee true
+busy bee false
+INSERT INTO 281class 2 ROWS
+angry bee true
+busy bee false
+INSERT INTO 281class2 2 ROWS
+angry bee 3
+busy bee 8
+PRINT FROM 281class 2 emotion person ALL
 DELETE FROM 281class2 WHERE age > 20
 PRINT FROM 281class 2 emotion Y/N WHERE Y/N = true
 PRINT FROM 281class2 2 emotion name ALL
@@ -37,4 +49,3 @@ JOIN 281class AND 281class2 WHERE emotion = emotion AND PRINT 4 emotion 1 person
 REMOVE 281class
 REMOVE 281class2
 QUIT
-
