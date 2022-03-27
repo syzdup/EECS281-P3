@@ -243,6 +243,30 @@ void DELETE_cmd(unordered_map<string, Table> &tables) {
     }
 }
 
+void GENERATE_cmd(unordered_map<std::string, Table> &tables) {
+    std::string table_name;
+    std::cin >> table_name; // throw away ("FOR")
+    std::cin >> table_name;
+
+    if(tables.find(table_name) != tables.end()) {
+        string index_type;
+        cin >> index_type;
+        if(index_type == "hash") {
+            cin >> index_type; // throw away ("INDEX")
+            cin >> index_type; // throw away ("ON")
+            tables[table_name].generate_index('H');
+        } else {
+            cin >> index_type; // throw away ("INDEX")
+            cin >> index_type; // throw away ("ON")
+            tables[table_name].generate_index('B');
+        }
+    } else {
+        std::string junk;
+        getline(std::cin, junk);
+        std::cout << "Error during GENERATE: " << table_name << " does not name a table in the database\n";
+    }
+}
+
 int main(int argc, char * argv[]) {
     ios_base::sync_with_stdio(false);
     cin >> boolalpha;
@@ -290,7 +314,7 @@ int main(int argc, char * argv[]) {
         } else if(cmd == "DELETE") {
             DELETE_cmd(tables);
         } else if(cmd == "GENERATE") {
-            getline(cin, junk);
+            GENERATE_cmd(tables);
         } else if(cmd == "JOIN") {
             JOIN_cmd(tables, quiet_mode);
         } else {

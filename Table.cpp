@@ -14,7 +14,7 @@ TableEntry Table::create_entry(EntryType current_type) {
     } else if(current_type == EntryType::String) {
         std::string string_entry;
         std::cin >> string_entry;
-        return TableEntry(string_entry); 
+        return TableEntry(string_entry);
     } else if(current_type == EntryType::Int) {
         int int_entry;
         std::cin >> int_entry;
@@ -155,12 +155,16 @@ void Table::insert() {
     for(size_t i = data.size(); i < end_size; ++i) {
         std::vector<TableEntry> new_row;
         new_row.reserve(col_names.size());
-
         for(size_t j = 0; j < col_names.size(); ++j) {
             EntryType current_type = col_types[j];
             new_row.emplace_back(create_entry(current_type));
         }
         data.emplace_back(new_row);
+        if(hash_index_on) {
+            hash_index[data[i][(unsigned long)indexed_column]].push_back(i);
+        } else if(bst_index_on) {
+            bst_index[data[i][(unsigned long)indexed_column]].push_back(i);
+        }
     }
     std::cout << "Added " << num_rows << " rows to " << name << " from position " << data.size() - num_rows <<
     " to " << data.size() - 1 << "\n";
@@ -175,13 +179,17 @@ void Table::delete_where() {
     int col_index;
     std::cin >> compare_operator;
     col_index = get_column_index(column_name);
+
     if(col_index == -1) {
         getline(std::cin, compare_operator);
-        std::cout << "Error during delete: " << column_name << " does not name a column in " << name << "\n";
+        std::cout << "Error during DELETE: " << column_name << " does not name a column in " << name << "\n";
         return;
     }
+    if(hash_index_on || bst_index_on) {
+        hash_index.clear();
+        bst_index.clear();
+    }
     EntryType compare_type = col_types[(unsigned long)col_index];
-    
     if(compare_operator == "<") {
         auto it = std::remove_if(data.begin(), data.end(), Entry_Comp((unsigned long)col_index, create_entry(compare_type), CompType::Less));
         data.erase(it, data.end());
@@ -196,4 +204,34 @@ void Table::delete_where() {
     }
     rows_deleted -= data.size();
     std::cout << "Deleted " << rows_deleted << " rows from " << name << "\n";
+}
+
+// Generates an index: H = hash index, B = bst index
+void Table::generate_index(char type) {
+    if(!hash_index.empty() || !bst_index.empty()) {
+        hash_index.clear();
+        bst_index.clear();
+    }
+    std::string column_name;
+    std::cin >> column_name;
+    int col_indice = get_column_index(column_name);
+    if(col_indice == -1) {
+        std::cout << "Error during GENERATE: " << column_name << " does not name a column in " << name << "\n";
+        return;
+    }
+    if(type == 'H') {
+        hash_index_on = true;
+        indexed_column = (unsigned long)col_indice;
+        for(size_t row = 0; row < data.size(); ++row) {
+            hash_index[data[row][(unsigned long)col_indice]].push_back(row);
+        }
+        std::cout << "Created hash index for table " << name << " on column " << column_name << "\n";
+    } else {
+        bst_index_on = true;
+        indexed_column = (unsigned long)col_indice;
+        for(size_t row = 0; row < data.size(); ++row) {
+            bst_index[data[row][(unsigned long)col_indice]].push_back(row);
+        }
+        std::cout << "Created bst index for table " << name << " on column " << column_name << "\n";
+    }
 }

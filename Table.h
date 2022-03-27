@@ -2,6 +2,8 @@
 #include "TableEntry.h"
 #include <vector>
 #include <string>
+#include <map>
+#include <unordered_map>
 
 // Functor (Paoletti video said this is bad and slow, make three functors)
 enum class CompType : uint8_t { Less, Greater, Equal };
@@ -45,6 +47,15 @@ class Table {
     // Actual data
     std::vector<std::vector<TableEntry> > data;
 
+    // Indexes
+    std::unordered_map<TableEntry, std::vector<size_t> > hash_index;
+    std::map<TableEntry, std::vector<size_t> > bst_index;
+    size_t indexed_column;
+    bool hash_index_on = false;
+    bool bst_index_on = false;
+
+
+
     // Member functions
     // Later: move helper functions to private
     TableEntry create_entry(EntryType current_type);
@@ -55,4 +66,5 @@ class Table {
     void print_where_helper(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode, Entry_Comp entry_comparator);
     void print_where(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode);
     void delete_where();
+    void generate_index(char type);
 };

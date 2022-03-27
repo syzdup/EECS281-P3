@@ -12,4 +12,33 @@ Marshall jazz 1578
 JOIN roommates AND friends WHERE name = person AND PRINT 3 name 1 fav_genre 2 age 1
 REMOVE roommates
 REMOVE friends
+CREATE table 8 int int int int int int int int a b c d e f g h
+INSERT INTO table 10 ROWS
+1 2 3 4 5 6 7 8
+1 2 3 4 5 6 7 7
+1 2 3 4 5 6 7 6
+1 2 3 4 5 6 7 5
+1 2 3 4 5 6 7 4
+1 2 3 4 5 6 7 3
+1 2 3 4 5 6 7 2
+1 2 3 4 5 6 7 1
+1 2 3 4 5 6 7 0
+1 2 3 4 5 6 7 1
+GENERATE FOR table hash INDEX ON h
+GENERATE FOR table hash INDEX ON a
+GENERATE FOR table bst INDEX ON h
+CREATE table2 8 int int int int int int int int a b c d e f g h
+INSERT INTO table 4 ROWS
+1 2 3 4 5 6 7 8
+1 2 3 4 5 6 7 7
+1 2 3 4 5 6 7 3
+1 2 3 4 5 6 7 3
+GENERATE FOR table2 hash INDEX ON h
+JOIN table AND table2 WHERE h = h AND PRINT 4 a 1 b 2 c 2 h 2
+JOIN table AND table2 WHERE a = b AND PRINT 4 a 2 b 1 c 1 h 2
+JOIN table AND table2 WHERE c = h AND PRINT 4 a 2 b 2 c 2 d 2
+DELETE FROM table WHERE a > 0
+JOIN table AND table2 WHERE a = a AND PRINT 4 a 1 b 2 c 2 h 2
+REMOVE table2
+REMOVE table
 QUIT

@@ -1,4 +1,4 @@
-# Basic 3
+# Lots of error handling checks
 CREATE 281class 3 string string bool emotion person Y/N
 CREATE cities 5 string string int double bool name state population area is_capital?
 CREATE pets 3 string bool bool name likes_cats? likes_dogs?
@@ -8,24 +8,32 @@ INSERT INTO 281class 3 ROWS
 stressed Paoletti true
 happy Darden true
 sad Angstadt false
-PRINT FROM cities 3 is_capital? name population ALL
-PRINT FROM 281class 2 emotion person ALL
 INSERT INTO cities 5 ROWS
 San_Francisco California 864816 46.87 false
 Ann_Arbor Michigan 120782 28.69 false
 Miami Florida 453579 55.25 false
 Albany New_York 98111 21.93 true
 Chicago Illinois 2705000 234 false
-PRINT FROM 281class 1 person ALL
-INSERT INTO pets 3 ROWS
-Paoletti true false
-Darden false true
-Angstadt true true
-REMOVE 281class
-PRINT FROM cities 3 population is_capital? name ALL
-PRINT FROM cities 2 name population WHERE population < 100000
+PRINT FROM cities 3 emotion person hello ALL
+PRINT FROM pets 2 name hello WHERE name = Paoletti
+DELETE FROM 281class WHERE emotion = stressed
+GENERATE FOR 281class hash INDEX ON hello
+GENERATE FOR cities hash INDEX ON hello
+GENERATE FOR citie hash INDEX ON population
+DELETE FROM citie WHERE population > 1000
+DELETE FROM cities WHERE population > 1000
+DELETE FROM 281class WHERE emotion = fjhldafhud
+DELETE FROM 281class WHERE emtion = fjhldafhud
+JOIN pet AND 281class WHERE Name = person AND PRINT 3 Name 1 emotion 2 likes_dogs? 1
+JOIN pets AND 281clas WHERE Name = person AND PRINT 3 Name 1 emotion 2 likes_dogs? 1
+JOIN pets AND 281class WHERE Name = perso AND PRINT 3 Name 1 emotion 2 likes_dogs? 1
+JOIN pets AND 281class WHERE Name = person AND PRINT 3 ame 1 emotion 2 likes_dogs? 1
+JOIN pets AND 281class WHERE Name = person AND PRINT 3 Name 1 emoton 2 likes_dogs? 1
+PRINT FROM pes 2 name hello WHERE name = Paoletti
+INSERT INTO dog 2 ROWS
+CREATE 281class 2 string string emotion person
+REMOVE dog
 REMOVE cities
-PRINT FROM pets 2 name likes_dogs? ALL
-PRINT FROM pets 2 name likes_cats? WHERE likes_cats? = true
 REMOVE pets
 QUIT
+
