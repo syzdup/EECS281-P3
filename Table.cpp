@@ -273,6 +273,8 @@ void Table::generate_index(char type) {
     if(!hash_index.empty() || !bst_index.empty()) {
         hash_index.clear();
         bst_index.clear();
+        bst_index_on = false;
+        hash_index_on = false;
     }
     std::string column_name;
     std::cin >> column_name;

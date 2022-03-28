@@ -7,6 +7,17 @@ Miami Florida 453579 55.25 false
 Albany New_York 98111 21.93 true
 Chicago Illinois 2705000 234 false
 PRINT FROM cities 2 name population WHERE population < 1000000
-#PRINT FROM cities 2 name population WHERE population = 98111
+PRINT FROM cities 2 name population WHERE population = 98111
+GENERATE FOR cities hash INDEX ON population
+PRINT FROM cities 2 name population WHERE population < 1000000
+INSERT INTO cities 2 ROWS
+Town Michigan 3802 44.3 false
+Other Michigan 31084 130.79 true
+GENERATE FOR cities bst INDEX ON population
+DELETE FROM cities WHERE population = 31084
+PRINT FROM cities 2 name state WHERE state = Michigan
+PRINT FROM cities 2 name population WHERE population < 1000000
+GENERATE FOR cities bst INDEX ON state
+PRINT FROM cities 2 name population WHERE population < 1000000
 REMOVE cities
 QUIT

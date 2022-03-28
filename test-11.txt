@@ -1,4 +1,4 @@
-#Awesome Spec Example!
+# Joining same table
 CREATE 281class 3 string string bool emotion person Y/N
 INSERT INTO 281class 8 ROWS
 happy Darden true
@@ -16,7 +16,8 @@ CREATE pets 3 string bool bool Name likes_cats? likes_dogs?
 INSERT INTO pets 2 ROWS
 Sith true true
 Paoletti true false
-JOIN pets AND 281class WHERE Name = person AND PRINT 3 Name 1 emotion 2 likes_dogs? 1
+JOIN 281class AND 281class WHERE emotion = emotion AND PRINT 3 emotion 1 person 1 Y/N 1
+JOIN 281class AND 281class WHERE emotion = person AND PRINT 3 emotion 1 person 2 Y/N 1
 REMOVE pets
 REMOVE 281class
 QUIT

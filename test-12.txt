@@ -1,0 +1,19 @@
+# Print from tests
+CREATE houses 3 string int int size price distance
+GENERATE FOR houses bst INDEX ON price
+CREATE cars 3 string string int make model price
+INSERT INTO houses 5 ROWS
+big 500000 3
+medium 250000 4
+small 100000 9
+tiny 20000 2
+other 40000 2
+PRINT FROM houses 2 size price WHERE price > 40000
+GENERATE FOR houses hash INDEX ON price
+PRINT FROM houses 2 size price WHERE price > 40000
+GENERATE FOR houses hash INDEX ON distance
+PRINT FROM houses 2 size price WHERE price > 40000
+PRINT FROM houses 2 size price WHERE distance > 40000
+PRINT FROM houses 2 size price WHERE distance > 2
+REMOVE houses
+QUIT
