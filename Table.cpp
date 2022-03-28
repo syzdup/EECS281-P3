@@ -116,9 +116,11 @@ void Table::bst_print_where(std::vector<std::string> &cols_to_print, std::vector
         }
     } else {
         auto match = bst_index.find(entry);
-        for(size_t row = 0; row < match->second.size(); ++row) {
+        if(match != bst_index.end()) {
+            for(size_t row = 0; row < match->second.size(); ++row) {
                 row_count += 1;
                 row_indices.push_back(match->second[row]);
+            }
         }
     }
     for(size_t r = 0; r < row_indices.size(); ++r) {
