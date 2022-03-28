@@ -8,7 +8,7 @@ small 100000 9
 tiny 20000 2
 JOIN cars and houses WHERE price = price AND PRINT 2 price 2 model 1
 DELETE FROM cars WHERE price > 93
-INSERT INTO cars 2 ROWS
+INSERT INTO cars 2 ROWS 
 Ford Taurus 10000
 Tesla X 100000
 JOIN cars and houses WHERE price = price AND PRINT 2 price 1 model 1

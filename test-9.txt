@@ -1,0 +1,26 @@
+CREATE houses 3 string int int size price distance
+GENERATE FOR houses bst INDEX ON price
+CREATE cars 3 string string int make model price
+INSERT INTO houses 5 ROWS
+big 500000 3
+medium 250000 4
+small 100000 9
+tiny 20000 2
+other 40000 2
+JOIN cars and houses WHERE price = price AND PRINT 2 price 2 model 1
+DELETE FROM cars WHERE price > 93
+INSERT INTO cars 2 ROWS
+Ford Taurus 10000
+Tesla ModelX 100000
+JOIN cars and houses WHERE price = price AND PRINT 2 price 1 model 1
+INSERT INTO cars 4 ROWS
+Ford Explorer 25000
+Cadillac Escalade 37000
+Dodge Caravan 38000
+Honda Accord 34000
+PRINT FROM cars 3 price model make ALL
+PRINT FROM cars 3 price model make WHERE price > 35000
+JOIN cars and houses WHERE price > price AND PRINT 2 price 2 model 1
+REMOVE houses
+REMOVE cars
+QUIT

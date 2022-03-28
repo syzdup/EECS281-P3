@@ -95,9 +95,48 @@ void Table::print_all(std::vector<std::string> &cols_to_print, std::vector<int> 
     std::cout << "Printed " << data.size() << " matching rows from " << name << "\n";
 }
 
+void Table::bst_print_where(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode, CompType comp_type, TableEntry entry) {
+    size_t row_count = 0;
+    std::vector<size_t> row_indices;
+    if(comp_type == CompType::Less) {
+        auto lower_bound = bst_index.lower_bound(entry);
+        for(auto it = bst_index.begin(); it != lower_bound; ++it) {
+            for(size_t row = 0; row < it->second.size(); ++row) {
+                row_count += 1;
+                row_indices.push_back(it->second[row]);
+            }
+        }
+    } else if(comp_type == CompType::Greater) {
+        auto upper_bound = bst_index.upper_bound(entry);
+        for(auto it = upper_bound; it != bst_index.end(); ++it) {
+            for(size_t row = 0; row < it->second.size(); ++row) {
+                row_count += 1;
+                row_indices.push_back(it->second[row]);
+            }
+        }
+    } else {
+        auto match = bst_index.find(entry);
+        for(size_t row = 0; row < match->second.size(); ++row) {
+                row_count += 1;
+                row_indices.push_back(match->second[row]);
+        }
+    }
+    for(size_t r = 0; r < row_indices.size(); ++r) {
+        for(size_t col = 0; col < cols_to_print.size(); ++col) {
+            if(!quiet_mode) {
+                std::cout << data[row_indices[r]][(unsigned long)col_indices[col]];
+                std::cout << " ";
+            }
+        }
+        if(!quiet_mode) {
+            std::cout << "\n";
+        }
+    }
+    std::cout << "Printed " << row_count << " matching rows from " << name << "\n";
+}
+
 void Table::print_where_helper(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode, Entry_Comp entry_comparator) {
     size_t row_count = 0;
-
     for(size_t row = 0; row < data.size(); ++row) {
         if(entry_comparator(data[row])) {
             row_count += 1;
@@ -132,14 +171,26 @@ void Table::print_where(std::vector<std::string> &cols_to_print, std::vector<int
     EntryType compare_type = col_types[(unsigned long)col_index];
     
     if(compare_operator == "<") {
-        Entry_Comp entry_comparator((unsigned long)col_index, create_entry(compare_type), CompType::Less);
-        print_where_helper(cols_to_print, col_indices, quiet_mode, entry_comparator);
+        if(bst_index_on && (unsigned long)col_index == indexed_column) {
+            bst_print_where(cols_to_print, col_indices, quiet_mode, CompType::Less, create_entry(compare_type));  
+        } else {
+            Entry_Comp entry_comparator((unsigned long)col_index, create_entry(compare_type), CompType::Less);
+            print_where_helper(cols_to_print, col_indices, quiet_mode, entry_comparator);
+        }
     } else if(compare_operator == ">") {
-        Entry_Comp entry_comparator((unsigned long)col_index, create_entry(compare_type), CompType::Greater);
-        print_where_helper(cols_to_print, col_indices, quiet_mode, entry_comparator);
+        if(bst_index_on && (unsigned long)col_index == indexed_column) {
+            bst_print_where(cols_to_print, col_indices, quiet_mode, CompType::Greater, create_entry(compare_type));  
+        } else {
+            Entry_Comp entry_comparator((unsigned long)col_index, create_entry(compare_type), CompType::Greater);
+            print_where_helper(cols_to_print, col_indices, quiet_mode, entry_comparator);
+        }
     } else {
-        Entry_Comp entry_comparator((unsigned long)col_index, create_entry(compare_type), CompType::Equal);
-        print_where_helper(cols_to_print, col_indices, quiet_mode, entry_comparator);
+        if(bst_index_on && (unsigned long)col_index == indexed_column) {
+            bst_print_where(cols_to_print, col_indices, quiet_mode, CompType::Equal, create_entry(compare_type));  
+        } else {
+            Entry_Comp entry_comparator((unsigned long)col_index, create_entry(compare_type), CompType::Equal);
+            print_where_helper(cols_to_print, col_indices, quiet_mode, entry_comparator);
+        }
     }
 }
 

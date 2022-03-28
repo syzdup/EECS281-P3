@@ -67,4 +67,5 @@ class Table {
     void print_where(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode);
     void delete_where();
     void generate_index(char type);
+    void bst_print_where(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode, CompType comp_type, TableEntry entry);
 };
