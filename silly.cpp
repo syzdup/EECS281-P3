@@ -104,17 +104,12 @@ void PRINT_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
 }
 
 void print_joined_row(unordered_map<std::string, Table> &tables, std::string table_first, std::string table_second, std::vector<std::string> 
-                      &print_cols, std::vector<int> &table_num, size_t row_first, size_t row_second, bool quiet_mode) {
-
+                      &print_cols, std::vector<int> &table_num, size_t row_first, size_t row_second) {
     for(size_t col = 0; col < print_cols.size(); ++col) {
         if(table_num[col] == 1) {
-            if(!quiet_mode) {
-                std::cout << tables[table_first].data[row_first][(unsigned long)tables[table_first].get_column_index(print_cols[col])] << " ";
-            }
+            std::cout << tables[table_first].data[row_first][(unsigned long)tables[table_first].get_column_index(print_cols[col])] << " ";
         } else {
-            if(!quiet_mode) {
-                std::cout << tables[table_second].data[row_second][(unsigned long)tables[table_second].get_column_index(print_cols[col])] << " ";
-            }
+            std::cout << tables[table_second].data[row_second][(unsigned long)tables[table_second].get_column_index(print_cols[col])] << " ";
         }
     }
     std::cout << "\n";
@@ -127,11 +122,13 @@ string table_second, size_t col_second_indice, bool quiet_mode, int indexed_tbl,
         // column already indexed
         for(size_t i = 0; i < tables[table_first].data.size(); ++i) {
             if(tables[table_second].hash_index.find(tables[table_first].data[i][col_first_indice]) != tables[table_second].hash_index.end()) {
-                matched_rows += 1;
                 for(size_t j = 0; j < tables[table_second].hash_index[tables[table_first].data[i][col_first_indice]].size(); ++j) {
-                    print_joined_row(tables, table_first, table_second, print_cols, table_num, i, j, quiet_mode);
+                    matched_rows += 1;
+                    if(!quiet_mode) {
+                        print_joined_row(tables, table_first, table_second, print_cols, table_num, i, tables[table_second].hash_index[tables[table_first].data[i][col_first_indice]][j]);
+                    }
                 }
-            } 
+            }
         }
     } else {
         // generate a temporary index
@@ -141,9 +138,11 @@ string table_second, size_t col_second_indice, bool quiet_mode, int indexed_tbl,
         }
         for(size_t i = 0; i < tables[table_first].data.size(); ++i) {
             if(temp_index.find(tables[table_first].data[i][col_first_indice]) != temp_index.end()) {
-                matched_rows += 1;
                 for(size_t j = 0; j < temp_index[tables[table_first].data[i][col_first_indice]].size(); ++j) {
-                    print_joined_row(tables, table_first, table_second, print_cols, table_num, i, j, quiet_mode);
+                    matched_rows += 1;
+                    if(!quiet_mode) {
+                        print_joined_row(tables, table_first, table_second, print_cols, table_num, i, temp_index[tables[table_first].data[i][col_first_indice]][j]);
+                    }
                 }
             }
         }

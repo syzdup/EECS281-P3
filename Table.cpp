@@ -254,6 +254,15 @@ void Table::delete_where() {
         data.erase(it, data.end());
     }
     rows_deleted -= data.size();
+    if(hash_index_on) {
+        for(size_t row = 0; row < data.size(); ++row) {
+            hash_index[data[row][indexed_column]].push_back(row);
+        }
+    } else if(bst_index_on) {
+        for(size_t row = 0; row < data.size(); ++row) {
+            bst_index[data[row][indexed_column]].push_back(row);
+        }
+    }
     std::cout << "Deleted " << rows_deleted << " rows from " << name << "\n";
 }
 
