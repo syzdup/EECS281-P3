@@ -37,4 +37,3 @@ JOIN 281class AND 281class2 WHERE emotion = emotion AND PRINT 4 emotion 1 person
 REMOVE 281class
 REMOVE 281class2
 QUIT
-

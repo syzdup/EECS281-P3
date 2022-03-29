@@ -42,6 +42,11 @@ void Table::print(bool quiet_mode) {
     size_t num_cols;
     std::cin >> num_cols;
 
+    if(name == "wing" && num_cols == 47) {
+        std::cout << "break\n";
+        std::cout << num_cols << "\n";
+    }
+
     std::vector<std::string> cols_to_print;
     std::vector<int> col_indices;
 
@@ -64,13 +69,6 @@ void Table::print(bool quiet_mode) {
             return;
         }
     }
-    // Print column names
-    if(!quiet_mode) {
-        for(size_t col = 0; col < cols_to_print.size(); ++col) {
-            std::cout << cols_to_print[col] << " ";
-        }
-        std::cout << "\n";
-    }
     // Check: WHERE or ALL
     std::cin >> temp_name;
     if(temp_name == "ALL") {
@@ -81,6 +79,13 @@ void Table::print(bool quiet_mode) {
 }
 
 void Table::print_all(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode) {
+    // Print columns
+    if(!quiet_mode) {
+        for(size_t col = 0; col < cols_to_print.size(); ++col) {
+            std::cout << cols_to_print[col] << " ";
+        }
+        std::cout << "\n";
+    }
     for(size_t row = 0; row < data.size(); ++row) {
         for(size_t col = 0; col < cols_to_print.size(); ++col) {
             if(!quiet_mode){
@@ -106,6 +111,7 @@ void Table::bst_print_where(std::vector<std::string> &cols_to_print, std::vector
                 row_indices.push_back(it->second[row]);
             }
         }
+
     } else if(comp_type == CompType::Greater) {
         auto upper_bound = bst_index.upper_bound(entry);
         for(auto it = upper_bound; it != bst_index.end(); ++it) {
@@ -115,6 +121,7 @@ void Table::bst_print_where(std::vector<std::string> &cols_to_print, std::vector
             }
         }
     } else {
+        // BUG COULD BE HERE
         auto match = bst_index.find(entry);
         if(match != bst_index.end()) {
             for(size_t row = 0; row < match->second.size(); ++row) {
@@ -142,8 +149,8 @@ void Table::print_where_helper(std::vector<std::string> &cols_to_print, std::vec
     for(size_t row = 0; row < data.size(); ++row) {
         if(entry_comparator(data[row])) {
             row_count += 1;
-            for(size_t col = 0; col < cols_to_print.size(); ++col) {
-                if(!quiet_mode) {
+            if(!quiet_mode) {
+                for(size_t col = 0; col < cols_to_print.size(); ++col) {
                     std::cout << data[row][(unsigned long)col_indices[col]];
                     std::cout << " ";
                 }
@@ -167,9 +174,17 @@ void Table::print_where(std::vector<std::string> &cols_to_print, std::vector<int
     col_index = get_column_index(column_name);
     if(col_index == -1) {
         getline(std::cin, compare_operator);
-        std::cout << column_name << " is not the name of a column in the table specified by " << name << "\n";
+        std::cout << "Error during PRINT: " << column_name << " does not name a column in " << name << "\n";
         return;
     }
+    // Print columns
+    if(!quiet_mode) {
+        for(size_t col = 0; col < cols_to_print.size(); ++col) {
+            std::cout << cols_to_print[col] << " ";
+        }
+        std::cout << "\n";
+    }
+
     EntryType compare_type = col_types[(unsigned long)col_index];
     
     if(compare_operator == "<") {
@@ -213,12 +228,20 @@ void Table::insert() {
             new_row.emplace_back(create_entry(current_type));
         }
         data.emplace_back(new_row);
+        // if(hash_index_on) {
+        //     hash_index[data[i][(unsigned long)indexed_column]].push_back(i);
+        // } else if(bst_index_on) {
+        //     bst_index[data[i][(unsigned long)indexed_column]].push_back(i);
+        // }
+    }
+    for(size_t row = data.size() - num_rows; row < data.size(); ++row) {
         if(hash_index_on) {
-            hash_index[data[i][(unsigned long)indexed_column]].push_back(i);
+            hash_index[data[row][(unsigned long)indexed_column]].push_back(row);
         } else if(bst_index_on) {
-            bst_index[data[i][(unsigned long)indexed_column]].push_back(i);
+            bst_index[data[row][(unsigned long)indexed_column]].push_back(row);
         }
     }
+
     std::cout << "Added " << num_rows << " rows to " << name << " from position " << data.size() - num_rows <<
     " to " << data.size() - 1 << "\n";
 }
@@ -238,10 +261,10 @@ void Table::delete_where() {
         std::cout << "Error during DELETE: " << column_name << " does not name a column in " << name << "\n";
         return;
     }
-    if(hash_index_on || bst_index_on) {
-        hash_index.clear();
-        bst_index.clear();
-    }
+    // if(hash_index_on || bst_index_on) {
+    //     hash_index.clear();
+    //     bst_index.clear();
+    // }
     EntryType compare_type = col_types[(unsigned long)col_index];
     if(compare_operator == "<") {
         auto it = std::remove_if(data.begin(), data.end(), Entry_Comp((unsigned long)col_index, create_entry(compare_type), CompType::Less));
@@ -256,13 +279,19 @@ void Table::delete_where() {
         data.erase(it, data.end());
     }
     rows_deleted -= data.size();
-    if(hash_index_on) {
-        for(size_t row = 0; row < data.size(); ++row) {
-            hash_index[data[row][indexed_column]].push_back(row);
+    if(rows_deleted != 0) {
+        if(hash_index_on || bst_index_on) {
+            hash_index.clear();
+            bst_index.clear();
         }
-    } else if(bst_index_on) {
-        for(size_t row = 0; row < data.size(); ++row) {
-            bst_index[data[row][indexed_column]].push_back(row);
+        if(hash_index_on) {
+            for(size_t row = 0; row < data.size(); ++row) {
+                hash_index[data[row][indexed_column]].push_back(row);
+            }
+        } else if(bst_index_on) {
+            for(size_t row = 0; row < data.size(); ++row) {
+                bst_index[data[row][indexed_column]].push_back(row);
+            }
         }
     }
     std::cout << "Deleted " << rows_deleted << " rows from " << name << "\n";
@@ -270,12 +299,6 @@ void Table::delete_where() {
 
 // Generates an index: H = hash index, B = bst index
 void Table::generate_index(char type) {
-    if(!hash_index.empty() || !bst_index.empty()) {
-        hash_index.clear();
-        bst_index.clear();
-        bst_index_on = false;
-        hash_index_on = false;
-    }
     std::string column_name;
     std::cin >> column_name;
     int col_indice = get_column_index(column_name);
@@ -283,6 +306,14 @@ void Table::generate_index(char type) {
         std::cout << "Error during GENERATE: " << column_name << " does not name a column in " << name << "\n";
         return;
     }
+    // Clear hashes and set false flags
+    if(!hash_index.empty() || !bst_index.empty()) {
+        hash_index.clear();
+        bst_index.clear();
+        bst_index_on = false;
+        hash_index_on = false;
+    }
+
     if(type == 'H') {
         hash_index_on = true;
         indexed_column = (unsigned long)col_indice;

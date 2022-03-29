@@ -36,4 +36,3 @@ REMOVE dog
 REMOVE cities
 REMOVE pets
 QUIT
-

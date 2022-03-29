@@ -10,7 +10,7 @@
 using namespace std;
 
 // Creates a table
-void CREATE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
+void CREATE_cmd(unordered_map<string, Table> &tables) {
     int num_cols;
     string table_name;
     vector<EntryType> col_types;
@@ -45,13 +45,12 @@ void CREATE_cmd(unordered_map<string, Table> &tables, bool quiet_mode) {
         Table new_table(table_name, col_types, col_names);
         tables.insert({table_name, new_table});
 
-        if(!quiet_mode) {
-            cout << "New table " << table_name << " with column(s) ";
-            for(size_t i = 0; i < col_names.size(); ++i) {
-                cout << col_names[i] << " ";
-            }
-            cout << "created\n";
+        cout << "New table " << table_name << " with column(s) ";
+        for(size_t i = 0; i < col_names.size(); ++i) {
+            cout << col_names[i] << " ";
         }
+        cout << "created\n";
+
     } else {
         std::string junk;
         getline(std::cin, junk);
@@ -117,8 +116,8 @@ void print_joined_row(unordered_map<std::string, Table> &tables, std::string tab
 
 void join_with_index(unordered_map<string, Table> &tables, string table_first, size_t col_first_indice, 
 string table_second, size_t col_second_indice, bool quiet_mode, int indexed_tbl, std::vector<std::string> &print_cols, std::vector<int> &table_num) {
-    size_t matched_rows = 0;
-    if(indexed_tbl == 1) {
+    size_t matched_rows = 0; 
+    if(indexed_tbl == 1) { 
         // column already indexed
         for(size_t i = 0; i < tables[table_first].data.size(); ++i) {
             if(tables[table_second].hash_index.find(tables[table_first].data[i][col_first_indice]) != tables[table_second].hash_index.end()) {
@@ -184,10 +183,12 @@ void JOIN_helper(unordered_map<std::string, Table> &tables, std::string table_fi
     size_t col_first_indice = (unsigned long)(tables[table_first].get_column_index(col_first));
     size_t col_second_indice = (unsigned long)(tables[table_second].get_column_index(col_second));
     // Print column names
-    for(size_t col = 0; col < print_cols.size(); ++col) {
-        std::cout << print_cols[col] << " ";
+    if(!quiet_mode) {
+        for(size_t col = 0; col < print_cols.size(); ++col) {
+            std::cout << print_cols[col] << " ";
+        }
+        std::cout << "\n";
     }
-    std::cout << "\n";
     // Check for generated index
     // *** change later *** using integers to determine which table(s) have the index
     // case 1: second table has an indexed column 
@@ -294,6 +295,7 @@ void GENERATE_cmd(unordered_map<std::string, Table> &tables) {
 }
 
 int main(int argc, char * argv[]) {
+
     ios_base::sync_with_stdio(false);
     cin >> boolalpha;
     cout << boolalpha;
@@ -330,7 +332,7 @@ int main(int argc, char * argv[]) {
             string junk;
             getline(cin, junk);
         } else if(cmd == "CREATE") {
-            CREATE_cmd(tables, quiet_mode);
+            CREATE_cmd(tables);
         } else if(cmd == "INSERT") {
             INSERT_cmd(tables);
         } else if(cmd == "PRINT") {
@@ -350,10 +352,7 @@ int main(int argc, char * argv[]) {
             }
         }
     } while(cmd != "QUIT");
-
-    if(!quiet_mode) {
-        cout << "Thanks for being silly!\n";
-    }
+    cout << "Thanks for being silly!\n";
     // Use return 0 instead of exit(0) so that locally scoped non-static destructors are called
     return 0;
 }

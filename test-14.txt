@@ -1,0 +1,41 @@
+# Compare bool test
+CREATE houses 3 string int bool size price is_nice
+GENERATE FOR houses bst INDEX ON is_nice
+CREATE cars 3 string string int make model price
+INSERT INTO houses 5 ROWS
+big 500000 true
+medium 250000 false
+small 100000 false
+tiny 20000 true
+other 40000 true
+PRINT FROM houses 3 size price is_nice WHERE is_nice = true
+DELETE FROM houses WHERE price = 20000
+INSERT INTO houses 3 ROWS
+b 39383 true
+a 58392 false
+gh 2082042 true
+GENERATE FOR houses bst INDEX ON price
+INSERT INTO houses 2 ROWS
+hu 583 false
+urrurh 3720248 false
+DELETE FROM houses WHERE price < 1000
+JOIN houses AND cars WHERE price = price AND PRINT 2 price 1 price 2
+DELETE FROM houses WHERE size = big
+INSERT INTO houses 2 ROWS
+u 742974 false
+ufiofi 2309299 true
+PRINT FROM houses 2 size price ALL
+JOIN houses AND cars WHERE price = price AND PRINT 2 price 1 price 2
+GENERATE FOR cars hash INDEX ON make
+INSERT INTO cars 2 ROWS
+gfdf jsks 544345
+fhj kdhsl 48937
+JOIN houses AND cars WHERE price = price AND PRINT 2 price 1 price 2
+DELETE FROM houses WHERE price > 0
+JOIN houses AND cars WHERE price = price AND PRINT 2 price 1 price 2
+INSERT INTO houses 2 ROWS
+u 742974 false
+ufiofi 2309299 true
+REMOVE houses
+REMOVE cars
+QUIT
