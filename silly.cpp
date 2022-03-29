@@ -1,5 +1,4 @@
 // Identifier: C0F4DFE8B340D81183C208F70F9D2D797908754D
-
 #include <iostream>
 #include <unordered_map>
 #include <vector>
@@ -121,11 +120,13 @@ string table_second, size_t col_second_indice, bool quiet_mode, int indexed_tbl,
         // column already indexed
         for(size_t i = 0; i < tables[table_first].data.size(); ++i) {
             if(tables[table_second].hash_index.find(tables[table_first].data[i][col_first_indice]) != tables[table_second].hash_index.end()) {
-                for(size_t j = 0; j < tables[table_second].hash_index[tables[table_first].data[i][col_first_indice]].size(); ++j) {
-                    matched_rows += 1;
-                    if(!quiet_mode) {
+                if(!quiet_mode) {
+                    for(size_t j = 0; j < tables[table_second].hash_index[tables[table_first].data[i][col_first_indice]].size(); ++j) {
+                        matched_rows += 1;
                         print_joined_row(tables, table_first, table_second, print_cols, table_num, i, tables[table_second].hash_index[tables[table_first].data[i][col_first_indice]][j]);
                     }
+                } else {
+                    matched_rows += tables[table_second].hash_index[tables[table_first].data[i][col_first_indice]].size();
                 }
             }
         }
@@ -137,11 +138,13 @@ string table_second, size_t col_second_indice, bool quiet_mode, int indexed_tbl,
         }
         for(size_t i = 0; i < tables[table_first].data.size(); ++i) {
             if(temp_index.find(tables[table_first].data[i][col_first_indice]) != temp_index.end()) {
-                for(size_t j = 0; j < temp_index[tables[table_first].data[i][col_first_indice]].size(); ++j) {
-                    matched_rows += 1;
-                    if(!quiet_mode) {
-                        print_joined_row(tables, table_first, table_second, print_cols, table_num, i, temp_index[tables[table_first].data[i][col_first_indice]][j]);
+                if(!quiet_mode) {
+                    for(size_t j = 0; j < temp_index[tables[table_first].data[i][col_first_indice]].size(); ++j) {
+                        matched_rows += 1;
+                        print_joined_row(tables, table_first, table_second, print_cols, table_num, i, temp_index[tables[table_first].data[i][col_first_indice]][j]);   
                     }
+                } else {
+                    matched_rows += temp_index[tables[table_first].data[i][col_first_indice]].size();
                 }
             }
         }

@@ -1512,7 +1512,7 @@
 % Printed 425 matching rows from foreigner
 % Created hash index for table area on column favorite
 % Printed 65 rows from joining radio to commander
-% Printed 0 matching rows from wing
+% Printed 191 matching rows from wing
 % Deleted 0 rows from creative
 % Printed 0 matching rows from tobacco
 % Deleted 3 rows from foreigner
@@ -1624,7 +1624,7 @@
 % Added 364 rows to tobacco from position 356 to 719
 % Printed 324 matching rows from drawer
 % Printed 0 rows from joining employ to continued
-% Printed 0 matching rows from wing
+% Printed 199 matching rows from wing
 % Printed 385 matching rows from location
 % Printed 2 rows from joining drift to furniture
 % Printed 2 rows from joining pole to furniture
@@ -1657,7 +1657,7 @@
 % Added 324 rows to spare from position 1498 to 1821
 % Printed 726 rows from joining explode to album
 % Added 320 rows to employ from position 0 to 319
-% Printed 0 matching rows from wing
+% Printed 172 matching rows from wing
 % Added 357 rows to drift from position 1328 to 1684
 % Deleted 365 rows from pay
 % New table analyze with column(s) third viewer enjoy union sensitive strategic house simple ancient nor unfortunately monument german preparation reporter reminder anyway hockey testify housing mask begin valuable belong plan ever sell example week credibility necessity occupation legal emergency invite harsh tear internal sink approximately inevitably cap interior bee chairman gathering thin negotiate decrease communication existence enforce govern technician etc difficulty weigh photo building weak compare part anywhere ally yield frustration dare continent lend bat slavery shark strategy prisoner discuss freedom russian comprehensive sharp honest display department offensive sexual isolate fur typically light debt across detect automatically supreme encourage poor grandmother vast its respondent silent specifically restore imply son airline officer modest employer suburb upper industrial patron heaven consist nonprofit globe tolerate introduction area poet debate injure better center gather vaccine virtually created
@@ -1771,7 +1771,7 @@
 % Deleted 0 rows from pole
 % Created hash index for table thick on column clear
 % Printed 0 rows from joining thick to commander
-% Printed 0 matching rows from wing
+% Printed 172 matching rows from wing
 % Printed 1735 matching rows from contractor
 % Printed 0 rows from joining waist to expertise
 % Deleted 0 rows from employ

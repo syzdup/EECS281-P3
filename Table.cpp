@@ -42,11 +42,6 @@ void Table::print(bool quiet_mode) {
     size_t num_cols;
     std::cin >> num_cols;
 
-    if(name == "wing" && num_cols == 47) {
-        std::cout << "break\n";
-        std::cout << num_cols << "\n";
-    }
-
     std::vector<std::string> cols_to_print;
     std::vector<int> col_indices;
 
@@ -72,7 +67,11 @@ void Table::print(bool quiet_mode) {
     // Check: WHERE or ALL
     std::cin >> temp_name;
     if(temp_name == "ALL") {
-        print_all(cols_to_print, col_indices, quiet_mode);
+        if(!quiet_mode) {
+            print_all(cols_to_print, col_indices, quiet_mode);
+        } else {
+            std::cout << "Printed " << data.size() << " matching rows from " << name << "\n";
+        }
     } else {
         print_where(cols_to_print, col_indices, quiet_mode);
     }
@@ -80,12 +79,10 @@ void Table::print(bool quiet_mode) {
 
 void Table::print_all(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode) {
     // Print columns
-    if(!quiet_mode) {
-        for(size_t col = 0; col < cols_to_print.size(); ++col) {
-            std::cout << cols_to_print[col] << " ";
-        }
-        std::cout << "\n";
+    for(size_t col = 0; col < cols_to_print.size(); ++col) {
+        std::cout << cols_to_print[col] << " ";
     }
+    std::cout << "\n";
     for(size_t row = 0; row < data.size(); ++row) {
         for(size_t col = 0; col < cols_to_print.size(); ++col) {
             if(!quiet_mode){
@@ -93,9 +90,7 @@ void Table::print_all(std::vector<std::string> &cols_to_print, std::vector<int> 
                 std::cout << " ";
             }
         }
-        if(!quiet_mode) {
-            std::cout << "\n";
-        }
+        std::cout << "\n";
     }
     std::cout << "Printed " << data.size() << " matching rows from " << name << "\n";
 }
@@ -121,7 +116,6 @@ void Table::bst_print_where(std::vector<std::string> &cols_to_print, std::vector
             }
         }
     } else {
-        // BUG COULD BE HERE
         auto match = bst_index.find(entry);
         if(match != bst_index.end()) {
             for(size_t row = 0; row < match->second.size(); ++row) {
@@ -130,14 +124,12 @@ void Table::bst_print_where(std::vector<std::string> &cols_to_print, std::vector
             }
         }
     }
-    for(size_t r = 0; r < row_indices.size(); ++r) {
-        for(size_t col = 0; col < cols_to_print.size(); ++col) {
-            if(!quiet_mode) {
-                std::cout << data[row_indices[r]][(unsigned long)col_indices[col]];
-                std::cout << " ";
+    if(!quiet_mode) {
+        for(size_t r = 0; r < row_indices.size(); ++r) {
+            for(size_t col = 0; col < cols_to_print.size(); ++col) {
+                    std::cout << data[row_indices[r]][(unsigned long)col_indices[col]];
+                    std::cout << " ";
             }
-        }
-        if(!quiet_mode) {
             std::cout << "\n";
         }
     }
@@ -145,6 +137,8 @@ void Table::bst_print_where(std::vector<std::string> &cols_to_print, std::vector
 }
 
 void Table::print_where_helper(std::vector<std::string> &cols_to_print, std::vector<int> &col_indices, bool quiet_mode, Entry_Comp entry_comparator) {
+    // replace by creating sorted bst
+    // very slow implementation here
     size_t row_count = 0;
     for(size_t row = 0; row < data.size(); ++row) {
         if(entry_comparator(data[row])) {
@@ -228,11 +222,6 @@ void Table::insert() {
             new_row.emplace_back(create_entry(current_type));
         }
         data.emplace_back(new_row);
-        // if(hash_index_on) {
-        //     hash_index[data[i][(unsigned long)indexed_column]].push_back(i);
-        // } else if(bst_index_on) {
-        //     bst_index[data[i][(unsigned long)indexed_column]].push_back(i);
-        // }
     }
     for(size_t row = data.size() - num_rows; row < data.size(); ++row) {
         if(hash_index_on) {
@@ -241,7 +230,6 @@ void Table::insert() {
             bst_index[data[row][(unsigned long)indexed_column]].push_back(row);
         }
     }
-
     std::cout << "Added " << num_rows << " rows to " << name << " from position " << data.size() - num_rows <<
     " to " << data.size() - 1 << "\n";
 }
@@ -261,10 +249,6 @@ void Table::delete_where() {
         std::cout << "Error during DELETE: " << column_name << " does not name a column in " << name << "\n";
         return;
     }
-    // if(hash_index_on || bst_index_on) {
-    //     hash_index.clear();
-    //     bst_index.clear();
-    // }
     EntryType compare_type = col_types[(unsigned long)col_index];
     if(compare_operator == "<") {
         auto it = std::remove_if(data.begin(), data.end(), Entry_Comp((unsigned long)col_index, create_entry(compare_type), CompType::Less));
@@ -316,6 +300,7 @@ void Table::generate_index(char type) {
 
     if(type == 'H') {
         hash_index_on = true;
+        bst_index_on = false;
         indexed_column = (unsigned long)col_indice;
         for(size_t row = 0; row < data.size(); ++row) {
             hash_index[data[row][(unsigned long)col_indice]].push_back(row);
@@ -323,6 +308,7 @@ void Table::generate_index(char type) {
         std::cout << "Created hash index for table " << name << " on column " << column_name << "\n";
     } else {
         bst_index_on = true;
+        hash_index_on = false;
         indexed_column = (unsigned long)col_indice;
         for(size_t row = 0; row < data.size(); ++row) {
             bst_index[data[row][(unsigned long)col_indice]].push_back(row);
